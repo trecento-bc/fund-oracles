@@ -1,0 +1,31 @@
+{
+  "name": "trecentoservicesproject",
+  "version": "1.0.0",
+  "description": "Services for Trecento Platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://mobh@bitbucket.org/mobh/trecentoservicesproject.git"
+  },
+  "keywords": [
+    "services",
+    "datafeed",
+    "backend"
+  ],
+  "author": "Mbenhajla",
+  "license": "MIT",
+  "homepage": "https://bitbucket.org/mobh/trecentoservicesproject#readme",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "joi": "^13.1.2",
+    "web3": "github:ethereum/web3.js"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.0.5"
+  }
+}
