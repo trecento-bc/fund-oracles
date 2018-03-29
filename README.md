@@ -50,9 +50,13 @@ The mock data used in the services is declared in the Server.js file.
 Service for investors to subscribe for buying OpenFundTokens (can be later  be  extend to support other Tokens).
 
 The service implements the following features ( see also the bpmn Process diagramm linked below "OpenFundContract_Subscribe_Process.bpmn":
+
 * validate subscription
+
 * add investors to list ( whitelist check is in smart contract)
+
 * call NAV to calculate the value of the fund ( mock rates instead of NAV for the first version)
+
 * call smart contract to transfer ether in exchange of the calculated amount of tokens 
 
 
