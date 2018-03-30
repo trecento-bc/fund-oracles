@@ -25,7 +25,14 @@ app.use(cors(corsOptions))
 
 // home
 app.get('/', (req,res) =>{
-  res.send ('Welcome to Subscription Service')
+  var homeUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+  var getInvestorsUrl = '<a href="'+req.protocol + '://' + req.get('host') + '/api/investors'+'">Investors list </a>';
+  var getFundsUrl = '<a href="'+req.protocol + '://' + req.get('host') + '/api/funds'+'">Funds list </a>';
+  var getratesUrl = '<a href="'+req.protocol + '://' + req.get('host') + '/api/rates'+'">Rates list </a>';
+  var getSubcriptionsUrl = '<a href="'+req.protocol + '://' + req.get('host') + '/api/subscriptions'+'">Subcriptions list </a>';
+  
+  res.send ('<h1>Welcome to Subscription Service</h1> <br><ul><li>'+getInvestorsUrl + '</li><li>'+getFundsUrl + '</li><li>'+getratesUrl + '</li><li>'+getSubcriptionsUrl + '</li></ul><br><b>Note:</b> to Subscribe for buying <b>OpenFund</b> Tokens, Please check details in <b>README.md</b> File ');
+
 });
 
 // Mock Data
@@ -72,3 +79,4 @@ app.listen(port, () => {
     console.log(`Server started on ${port}!`);
   });
 
+  module.exports = app; 

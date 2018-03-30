@@ -47,10 +47,15 @@ router.post('/subscriptions' , function(req, res)  {
       quantity:req.body.quantity,
       subScriptionDate:new Date()
     };
+  // add Subscription 
+  const ret = SubscriptionService.addSubscription(subscription, investors);
+  if (ret){
     subscriptions.push (subscription);
-  
     res.send(subscription);
-  
+  }else{
+    //error
+    res.status(400).send('subscription could not be added');
+  }
   
   });
 
