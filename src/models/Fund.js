@@ -1,18 +1,5 @@
 //example:   { token: 'TRCOF', name: 'openfund'}
-
-export class Fund {
-
-  token: string;
-  name: string;
-
-  constructor(token: string, name: string) {
-      this.token = token;
-      this.name = name;
-  }
-
-}
-
-/*function Fund (token, name) {       
+function Fund (token, name) {       
   this.token = token || null;
   this.name  = name  || null;
 }
@@ -48,5 +35,4 @@ Fund.prototype.fill = function(newFields) {
   }
 };
 
-module.exports = Fund;     // Export Fund
-*/
+module.exports = Fund;     

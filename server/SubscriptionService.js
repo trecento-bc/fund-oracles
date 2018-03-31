@@ -20,7 +20,7 @@ var schedule = require('node-schedule');
 
 
 // Call Job to assign tokens for the subscribers daily on 18:00
-var j = schedule.scheduleJob('18 * * *', function(){
+var j = schedule.scheduleJob('18 * * *', function () {
   assignOpenFundToken();
 });
 
@@ -35,10 +35,10 @@ var j = schedule.scheduleJob('18 * * *', function(){
  * @return
  *   transactionReciept in success case and null in error case
  */
-function addSubscription(subscription,investors, web3){
+function addSubscription(subscription, investors, web3) {
   console.log("addSubscription");
   // declare contract 
-  const OpenFund_json  = require ('../contracts_api/OpenFundToken.json');
+  const OpenFund_json = require('../contracts_api/OpenFundToken.json');
   abi = OpenFund_json.abi;
   console.log(abi);
   var contractInstance = new web3.eth.Contract(abi, '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe');
@@ -47,24 +47,24 @@ function addSubscription(subscription,investors, web3){
 
   var transactionReciept = null;
   const result = validateSubscription(subscription);
-  if(!result.error){
+  if (!result.error) {
     const investor = investors.find(arg => arg.id === subscription.investorId)
-    if(!investor){
-        // add investor if not yet existing
-        investor = addInvestorCandidate(investor, investors);
-     }
-     if (investor){
-       console.log(investor);
-       // call NAV for Asset Value 
-       const assetValue = getNavValuations(subscription.token);
-       console.log(assetValue);
-       //calculate token Amount
-       const resultAmount = calculateTokenAmount(assetValue);
-       console.log(resultAmount);
-       // Call Smartcontract
-       transactionReciept = mintOpenFundToken(subscription, contractInstance);
-       console.log(transactionReciept);
-     }
+    if (!investor) {
+      // add investor if not yet existing
+      investor = addInvestorCandidate(investor, investors);
+    }
+    if (investor) {
+      console.log(investor);
+      // call NAV for Asset Value 
+      const assetValue = getNavValuations(subscription.token);
+      console.log(assetValue);
+      //calculate token Amount
+      const resultAmount = calculateTokenAmount(assetValue);
+      console.log(resultAmount);
+      // Call Smartcontract
+      transactionReciept = mintOpenFundToken(subscription, contractInstance);
+      console.log(transactionReciept);
+    }
   }
   return transactionReciept;
 }
@@ -83,16 +83,16 @@ function addSubscription(subscription,investors, web3){
  *   result of validation ( joi)
  */
 
-function validateSubscription(subscription){
-   
-  const schema ={
+function validateSubscription(subscription) {
+
+  const schema = {
     investorId: joi.number().required(),
     token: joi.string().min(3).required(),
     quantity: joi.number().greater(0).required()
   };
   const result = joi.validate(subscription, schema);
   return result;
-} 
+}
 
 /**
  * Add Investor to Investor list
@@ -105,8 +105,8 @@ function validateSubscription(subscription){
  * @return
  *   investor 
  */
-function addInvestorCandidate(investor, investors){
-  investors.push (investor);
+function addInvestorCandidate(investor, investors) {
+  investors.push(investor);
   return investor;
 }
 
@@ -120,7 +120,7 @@ function addInvestorCandidate(investor, investors){
  * @return
  *   The value of the token as uint
  */
-function getNavValuations(token){
+function getNavValuations(token) {
   // Mock data
   const assetValue = 100;
   return assetValue;
@@ -135,7 +135,7 @@ function getNavValuations(token){
  * @return
  *   The value of the token as uint
  */
-function calculateTokenAmount(assetValue){
+function calculateTokenAmount(assetValue) {
   // Mock data
   var amount = 10;
   return amount;
@@ -150,10 +150,10 @@ function calculateTokenAmount(assetValue){
  * @return
  *   transactionReciept
  */
-function mintOpenFundToken(subscription, contractInstance){
+function mintOpenFundToken(subscription, contractInstance) {
   //Mock data
-  var transactionReciept ={
-      token: subscription.token
+  var transactionReciept = {
+    token: subscription.token
   };
   // TODO : sign Transaction manually ( private key needed) 
   // oruse Metamask/localNode
@@ -173,8 +173,8 @@ function mintOpenFundToken(subscription, contractInstance){
  * @return
  *   transactionReciept
  */
-function assignOpenFundToken(){
- 
+function assignOpenFundToken() {
+
 }
 
 
