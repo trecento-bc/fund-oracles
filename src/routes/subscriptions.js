@@ -24,6 +24,7 @@ router.post('/subscriptions' , function(req, res)  {
     var funds = req.funds;
     var rates = req.rates;
     var subscriptions = req.subscriptions;
+    var web3 = req.web3;
     // Validate input data
     const result = SubscriptionService.validateSubscription(req.body);
     if(result.error){
@@ -48,7 +49,7 @@ router.post('/subscriptions' , function(req, res)  {
       subScriptionDate:new Date()
     };
   // add Subscription 
-  const ret = SubscriptionService.addSubscription(subscription, investors);
+  const ret = SubscriptionService.addSubscription(subscription, investors,web3);
   if (ret){
     subscriptions.push (subscription);
     res.send(subscription);

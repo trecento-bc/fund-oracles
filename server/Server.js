@@ -4,7 +4,18 @@ const app = express();
 app.use(express.json());
 var Web3 = require('web3');
 
-const web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+var web3 ;
+let web3Found = false
+// Checking if Web3 has been injected by the browser (Mist/MetaMask)
+if (typeof web3 !== 'undefined') {
+  // Use Mist/MetaMask's provider (Chrome)
+  web3Found = true
+  web3 = new Web3(web3.currentProvider)
+} else {
+  // TODO: Fall back to local node ( or https://mainnet.infura.io/ )
+  web3Found = false
+  web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+}
 
 var investorRoutes = require('../src/routes/investors');
 var fundRoutes = require('../src/routes/funds');
@@ -69,6 +80,7 @@ app.use ('/api',
     req.funds = funds;
     req.rates = rates;
     req.subscriptions = subscriptions;
+    req.web3= web3;
     next();
   }
 ,subscriptionRoutes);
@@ -79,4 +91,7 @@ app.listen(port, () => {
     console.log(`Server started on ${port}!`);
   });
 
-  module.exports = app; 
+  module.exports = {
+    app : app
+
+  }; 
