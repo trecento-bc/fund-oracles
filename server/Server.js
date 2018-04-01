@@ -14,8 +14,12 @@ if (typeof web3 !== 'undefined') {
 } else {
   // TODO: Fall back to local node ( or https://mainnet.infura.io/ )
   web3Found = false
-  web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
+  web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8544'));
 }
+
+console.log('Eth Node Version: ', web3.version.node);
+console.log("Network: " ,web3.version.network, web3.version.ethereum);
+console.log('Connected to : ', web3.currentProvider);
 
 //routes
 var investorRoutes = require('../src/routes/investors');

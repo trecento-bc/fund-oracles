@@ -18,6 +18,7 @@ const app = express();
 app.use(express.json());
 var schedule = require('node-schedule');
 
+
 //Database
 var InvestorRepository = require('../src/database/InvestorRepository');
 var FundRepository = require('../src/database/FundRepository');
@@ -36,32 +37,46 @@ const subscriptions = SubscriptionRepositoryInstance.findAll();
 
 const RateRepositoryInstance = new RateRepository()
 const rates = RateRepositoryInstance.findAll();
+let web3;
 
-
-// Call Job to assign tokens for the subscribers daily on 18:00
+// Call Job to assign tokens for the new subscribers daily on 18:00
 var j = schedule.scheduleJob('18 * * *', function () {
-  assignOpenFundToken();
+  subscriptions.forEach(subscription => {
+    assignOpenFundToken(subscription);
+  });
 });
 
 /**
- * Add Subscription for Fund
+ * set web3 provider 
  *
- *  investor Subscription to buy funds shares ( tokens)
+ * @param {Subscription}   subscription
+ * @param {web3}   web3 instance
+ * 
+ */
+
+function setWeb3Provider(value) {
+  web3 = value;
+}
+
+/**
+ * Add Subscription for OpenFundTokens
+ *
+ *  investor Subscription to subscribe for buying shares (OpenFundTokens)
  * 
  * @param {Subscription}   subscription
- * @param {investors[]}   investors
  * 
  * @return
- *   transactionReciept in success case and null in error case
+ *   subscription object in success case and a string with error message 
+ *  in error case
  */
-function addSubscription(req, web3) {
+function addSubscription(req) {
   var ret = null;
   const subscription = {
     id: subscriptions.length + 1,
-    investorId:req.body.investorId,
-    token:req.body.token,
-    quantity:req.body.quantity,
-    subScriptionDate:new Date()
+    investorId: req.body.investorId,
+    token: req.body.token,
+    quantity: req.body.quantity,
+    subScriptionDate: new Date()
   };
   const result = validateSubscription(subscription);
   console.log(result);
@@ -74,11 +89,13 @@ function addSubscription(req, web3) {
     }
     if (investor) {
       SubscriptionRepositoryInstance.save(subscription);
+      // TODO : assignOpenFundToken call should be scheduled only once a day
+      assignOpenFundToken(subscription);
       return subscription;
     }
-  }else{
+  } else {
     // error
-    ret = result; 
+    ret = result;
   }
   return ret;
 }
@@ -140,53 +157,32 @@ function addInvestorCandidate(investor) {
 /**
  * Returns the value of the given token widget.
  *
- * call NAV to get the token value
+ * call NAV to get the token value in Euro
  * 
  * @param {String}   token Name
  * 
  * @return
  *   The value of the token as uint
  */
-function getNavValuations(token) {
+function getNavValuationsInEuro(token) {
   // Mock data
-  const assetValue = 100;
-  return assetValue;
+  const euroValue = 100;
+  return euroValue;
 }
 
 /**
- * Returns the Amount of tokens.
+ * Returns the Amount of ethers.
  *
- * calculate amount of tokens for the transfered Ether.
+ * Amount of ether for the given euroValue
  * 
  * @param {integer}   assetValue        .
  * @return
- *   The value of the token as uint
+ *   ether amount
  */
-function calculateTokenAmount(assetValue) {
+function etherAmount(euroValue) {
   // Mock data
   var amount = 10;
   return amount;
-}
-
-/**
- * Returns the transaction reciept.
- *
- * Call OpenFundToken Smart contract and Transfer Ether to buy tokens
- * 
- * @param {Subscription}   subscription        .
- * @return
- *   transactionReciept
- */
-function mintOpenFundToken(subscription, contractInstance) {
-  //Mock data
-  var transactionReciept = {
-    token: subscription.token
-  };
-  // TODO : sign Transaction manually ( private key needed) 
-  // oruse Metamask/localNode
-  //contractInstance.transfer();
-
-  return transactionReciept;
 }
 
 
@@ -200,31 +196,73 @@ function mintOpenFundToken(subscription, contractInstance) {
  * @return
  *   transactionReciept
  */
-function assignOpenFundToken() {
+function assignOpenFundToken(subscription) {
   // declare contract 
-  const OpenFund_json = require('../contracts_api/OpenFundToken.json');
+  const OpenFund_json = require('../contracts_api/OpenFundTokenLogic.json');
+  const Token_json = require('../contracts_api/Math.json');
   abi = OpenFund_json.abi;
+  //abi = Math_json.abi;
   console.log(abi);
-  var contractInstance = new web3.eth.Contract(abi, '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe');
-  var accounts;
-  var account;
-
-  subscriptions.forEach(subscription => {
-    if (subscription) {
-      console.log(subscription);
-      // call NAV for Asset Value 
-      const assetValue = getNavValuations(subscription.token);
-      console.log(assetValue);
-      //calculate token Amount
-      const resultAmount = calculateTokenAmount(assetValue);
-      console.log(resultAmount);
-      // Call Smartcontract
-      transactionReciept = mintOpenFundToken(subscription, contractInstance);
-      console.log(transactionReciept);
-    }
-
+  //TODO: just for test , fix address at local chain ( ganache)
+  console.log("***Instantiate OpenFundTokenLogic****");
+  var contractInstance = new web3.eth.Contract(abi, '0x125823729b474b52f8e9672cf88a3517035edb48', {
+    from: '0x0f21f6fb13310ac0e17205840a91da93119efbec', // account 0
+    gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
   });
 
+  var accounts;
+  var accountFrom;
+  var accountTo;
+
+  if (subscription) {
+    console.log(subscription);
+    // token value in Euro  
+    const euroValue = getNavValuationsInEuro(subscription.token);
+    console.log(euroValue);
+    //convert euroValue to ether
+    const valueInEther = etherAmount(euroValue);
+    //const valueInWei = web3.toWei(valueInEther, 'ether');
+    console.log(valueInEther);
+    // Get the accounts 
+    web3.eth.getAccounts(function (err, accs) {
+      if (err != null) {
+        console.log("There was an error fetching accounts.");
+        return;
+      }
+
+      if (accs.length == 0) {
+        console.log("Couldn't get any accounts! Make sure  Ethereum client is configured correctly.");
+        return;
+      }
+
+      accounts = accs;
+      accountFrom = accounts[0];
+      console.log(`accountFrom: ${accountFrom}`);
+      accountTo = accounts[1];
+      console.log(`accountTo: ${accountTo}`);
+
+      // TODO contract not instantiated !!!
+      console.log(`contractInstance: ${contractInstance}`);
+      console.log(contractInstance.options.address);
+      // Call Smartcontract to transfer Ether to the openTokenFund contract
+      // and adpat the investor balance, Investor address must be in allowances
+
+      // using the promise
+      contractInstance.methods.transfer(accountFrom, accountTo, valueInEther).call({ from: accountFrom })
+        .then(function (result) {
+          console.log(result);
+        }).catch((err) => {
+          console.log(err);
+        });
+
+     
+
+    });
+
+
+
+
+  }
 }
 
 /**
@@ -265,6 +303,7 @@ function getFunds() {
 
 
 module.exports = {
+  setWeb3Provider: setWeb3Provider,
   validateSubscription: validateSubscription,
   addSubscription: addSubscription,
   getSubscriptions: getSubscriptions,

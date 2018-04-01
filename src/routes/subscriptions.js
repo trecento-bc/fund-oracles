@@ -20,9 +20,10 @@ router.get('/subscriptions', function (req, res) {
 });
 
 router.post('/subscriptions', function (req, res) {
-  var web3 = req.web3;
+  //Set web3 Provider
+  SubscriptionService.setWeb3Provider(req.web3);
   // add Subscription 
-  const ret = SubscriptionService.addSubscription(req, web3);
+  const ret = SubscriptionService.addSubscription(req);
   if (ret && Object.prototype.toString.call(ret) === "[object object]") {
     res.send(ret);
   } else if (ret) {
