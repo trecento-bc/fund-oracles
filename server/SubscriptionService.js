@@ -18,6 +18,25 @@ const app = express();
 app.use(express.json());
 var schedule = require('node-schedule');
 
+//Database
+var InvestorRepository = require('../src/database/InvestorRepository');
+var FundRepository = require('../src/database/FundRepository');
+var RateRepository = require('../src/database/RateRepository');
+var SubscriptionRepository = require('../src/database/SubscriptionRepository');
+
+// Retrieve Data
+const InvestorRepositoryInstance = new InvestorRepository()
+const investors = InvestorRepositoryInstance.findAll();
+
+const FundRepositoryInstance = new FundRepository()
+const funds = new FundRepository().findAll();
+
+const SubscriptionRepositoryInstance = new SubscriptionRepository()
+const subscriptions = SubscriptionRepositoryInstance.findAll();
+
+const RateRepositoryInstance = new RateRepository()
+const rates = RateRepositoryInstance.findAll();
+
 
 // Call Job to assign tokens for the subscribers daily on 18:00
 var j = schedule.scheduleJob('18 * * *', function () {
@@ -35,63 +54,71 @@ var j = schedule.scheduleJob('18 * * *', function () {
  * @return
  *   transactionReciept in success case and null in error case
  */
-function addSubscription(subscription, investors, web3) {
-  console.log("addSubscription");
-  // declare contract 
-  const OpenFund_json = require('../contracts_api/OpenFundToken.json');
-  abi = OpenFund_json.abi;
-  console.log(abi);
-  var contractInstance = new web3.eth.Contract(abi, '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe');
-  var accounts;
-  var account;
-
-  var transactionReciept = null;
+function addSubscription(req, web3) {
+  var ret = null;
+  const subscription = {
+    id: subscriptions.length + 1,
+    investorId:req.body.investorId,
+    token:req.body.token,
+    quantity:req.body.quantity,
+    subScriptionDate:new Date()
+  };
   const result = validateSubscription(subscription);
-  if (!result.error) {
+  console.log(result);
+  if (!result) {
     const investor = investors.find(arg => arg.id === subscription.investorId)
+    console.log(investor);
     if (!investor) {
       // add investor if not yet existing
-      investor = addInvestorCandidate(investor, investors);
+      investor = addInvestorCandidate(investor);
     }
     if (investor) {
-      console.log(investor);
-      // call NAV for Asset Value 
-      const assetValue = getNavValuations(subscription.token);
-      console.log(assetValue);
-      //calculate token Amount
-      const resultAmount = calculateTokenAmount(assetValue);
-      console.log(resultAmount);
-      // Call Smartcontract
-      transactionReciept = mintOpenFundToken(subscription, contractInstance);
-      console.log(transactionReciept);
+      SubscriptionRepositoryInstance.save(subscription);
+      return subscription;
     }
+  }else{
+    // error
+    ret = result; 
   }
-  return transactionReciept;
+  return ret;
 }
-
 
 
 
 /**
  * Subscription Validation
  *
- *  Uses joi schemas to validate input data 
+ *  validate input data and returns message in error case
  * 
  * @param {Subscription}   subscription
  * 
  * @return
- *   result of validation ( joi)
+ *   String with message of validation
  */
 
 function validateSubscription(subscription) {
 
+  var errorMessage = null;
   const schema = {
+    id: joi.allow(),
     investorId: joi.number().required(),
     token: joi.string().min(3).required(),
-    quantity: joi.number().greater(0).required()
+    quantity: joi.number().greater(0).required(),
+    subScriptionDate: joi.allow()
   };
   const result = joi.validate(subscription, schema);
-  return result;
+  if (result.error) {
+    return result.error.details[0].message;
+  }
+  const investor = investors.find(arg => arg.id === parseInt(subscription.investorId))
+  if (!investor) {
+    return 'investor not found';
+  }
+  const fund = funds.find(arg => arg.token === subscription.token);
+  if (!fund) {
+    return 'fund/token not found';
+  }
+  return errorMessage
 }
 
 /**
@@ -105,8 +132,8 @@ function validateSubscription(subscription) {
  * @return
  *   investor 
  */
-function addInvestorCandidate(investor, investors) {
-  investors.push(investor);
+function addInvestorCandidate(investor) {
+  InvestorRepositoryInstance.save(investor);
   return investor;
 }
 
@@ -174,11 +201,74 @@ function mintOpenFundToken(subscription, contractInstance) {
  *   transactionReciept
  */
 function assignOpenFundToken() {
+  // declare contract 
+  const OpenFund_json = require('../contracts_api/OpenFundToken.json');
+  abi = OpenFund_json.abi;
+  console.log(abi);
+  var contractInstance = new web3.eth.Contract(abi, '0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe');
+  var accounts;
+  var account;
 
+  subscriptions.forEach(subscription => {
+    if (subscription) {
+      console.log(subscription);
+      // call NAV for Asset Value 
+      const assetValue = getNavValuations(subscription.token);
+      console.log(assetValue);
+      //calculate token Amount
+      const resultAmount = calculateTokenAmount(assetValue);
+      console.log(resultAmount);
+      // Call Smartcontract
+      transactionReciept = mintOpenFundToken(subscription, contractInstance);
+      console.log(transactionReciept);
+    }
+
+  });
+
+}
+
+/**
+ * Returns all subscriptions.
+ * @return
+ *   Subscription[]
+ */
+function getSubscriptions() {
+  return subscriptions;
+}
+
+/**
+ * Returns all rates.
+ * @return
+ *   Rate[]
+ */
+function getRates() {
+  return rates;
+}
+
+/**
+ * Returns all Investors.
+ * @return
+ *   Investor[]
+ */
+function getInvestors() {
+  return investors;
+}
+
+/**
+ * Returns all funds.
+ * @return
+ *   Fund[]
+ */
+function getFunds() {
+  return funds;
 }
 
 
 module.exports = {
   validateSubscription: validateSubscription,
-  addSubscription: addSubscription
+  addSubscription: addSubscription,
+  getSubscriptions: getSubscriptions,
+  getRates: getRates,
+  getFunds: getFunds,
+  getInvestors: getInvestors
 };

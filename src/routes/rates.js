@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-
+var RateRepository = require('../../src/database/RateRepository');
+const rates = new RateRepository().findAll();
 
 // rates for funds tokens / NAV calculation (  get, list, add, delete )
 router.get ('/rates/:token', function (req, res) {
-    var rates = req.rates;
     const rate = rates.find(arg => arg.token ===  req.params.token);
     if (!rate){
       res.status(404).send('rate not found');
@@ -14,7 +14,6 @@ router.get ('/rates/:token', function (req, res) {
   });
   
   router.get ('/rates', function (req, res) {
-    var rates = req.rates;
     res.send(rates);
   });
  

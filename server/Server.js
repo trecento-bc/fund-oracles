@@ -17,18 +17,11 @@ if (typeof web3 !== 'undefined') {
   web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8545'));
 }
 
-//rooutes
+//routes
 var investorRoutes = require('../src/routes/investors');
 var fundRoutes = require('../src/routes/funds');
 var rateRoutes = require('../src/routes/rates');
 var subscriptionRoutes = require('../src/routes/subscriptions');
-
-//models & mockData
-var InvestorRepository = require('../src/database/InvestorRepository');
-var FundRepository = require('../src/database/FundRepository');
-var RateRepository = require('../src/database/RateRepository');
-var SubscriptionRepository = require('../src/database/SubscriptionRepository');
-
 
 const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 // cross origin options
@@ -52,41 +45,29 @@ app.get('/', (req, res) => {
 
 });
 
-// Retrieve Data
-const investors = new InvestorRepository().findAll();
-const funds = new FundRepository().findAll();
-const subscriptions = new SubscriptionRepository().findAll();
-const rates = new RateRepository().findAll();
 
 
 // Routing  
 app.use('/api',
   function (req, res, next) {
-    req.investors = investors;
     next();
   }
   , investorRoutes);
 
 app.use('/api',
   function (req, res, next) {
-    req.funds = funds;
     next();
   }
   , fundRoutes);
 
 app.use('/api',
   function (req, res, next) {
-    req.rates = rates;
     next();
   }
   , rateRoutes);
 
 app.use('/api',
   function (req, res, next) {
-    req.investors = investors;
-    req.funds = funds;
-    req.rates = rates;
-    req.subscriptions = subscriptions;
     req.web3 = web3;
     next();
   }

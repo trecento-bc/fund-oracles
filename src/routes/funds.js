@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
+var FundRepository = require('../../src/database/FundRepository');
+const funds = new FundRepository().findAll();
 
 //funds ( get, list, add, delete)
 
 router.get ('/funds/:token', function (req, res) {
-    var funds = req.funds;
     const fund = funds.find(arg => arg.token ===  req.params.token);
     if (!fund){
       res.status(404).send('fund not found');
@@ -15,7 +15,6 @@ router.get ('/funds/:token', function (req, res) {
   });
 
 router.get ('/funds', function (req, res) { 
-    var funds = req.funds;
     res.send(funds);
 });
  
