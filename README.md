@@ -13,7 +13,7 @@ This project doesn't use truffle.
 
 
 ### Server.js
-A test restful http-server to allow calling the services from the browser to display subscriptions or added investors ( GET requests).
+A test restful http-server to allow calling the services from the browser to display subscriptions, investors, funds and to add new subscriptions through a basic HTML Form.
 
 * Example to Get existing subscriptions 
 ```
@@ -22,14 +22,12 @@ http://localhost:8000/api/subscriptions
 ```
 ![Server](/images/server_home.png)
 
-POST requests can be send using "Postman" tool.
+* POST new subscriptions  requests can be send through a Simple Form.
 
-* Example to POST new subscriptions 
 
-![addSubscription](/images/postman_addSubscription.png)
+![addSubscription](/images/addSubscription.png)
 ----
 
-The test server will be extended with simple forms to allow POST /PUT/ Delete without the need of POSTMAN.
 
 ### Models & Database
 

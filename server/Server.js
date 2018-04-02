@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
   var addSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/form' + '">Add Subcription Form</a>';
 
 
-  res.send('<h1>Welcome to Subscription Service</h1> <br><ul><li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><li>' + getSubcriptionsUrl + '</li><br><li>' + addSubcriptionsUrl + '</li></ul><br><b>Note:</b> to Subscribe for buying <b>OpenFund</b> Tokens, Please check details in <b>README.md</b> File ');
+  res.send('<h1>Welcome to Subscription Service</h1> <br><ul><li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><li>' + getSubcriptionsUrl + '</li><br><li>' + addSubcriptionsUrl + '</li></ul>');
 
 });
 
