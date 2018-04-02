@@ -93,9 +93,13 @@ tbd
 
 ## installation DEV (locally)
 3 Steps are needed :
+
 * Step1: deploy Smart Contract 
+
 * Step2: adpat Smart contract address in "SubscriptionRepository.js" File
+
 * Step3: start Server and add subscriptions
+
 
 ### Step1: Blockchain & SmartContracts Deployment
 * download SmartContracts from Bitbucket repo
