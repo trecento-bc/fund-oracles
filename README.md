@@ -92,8 +92,42 @@ tbd
 
 
 ## installation DEV (locally)
+3 Steps are needed :
+* Step1: deploy Smart Contract 
+* Step2: adpat Smart contract address in "SubscriptionRepository.js" File
+* Step3: start Server and add subscriptions
 
-### Server 
+### Step1: Blockchain & SmartContracts Deployment
+* download SmartContracts from Bitbucket repo
+
+```
+https://bitbucket.org/mobh/trecentoproject
+```
+* start ganache local test Blockchain with prefilled Accounts
+
+```
+sh runTestRpc.sh
+```
+
+* deploy smart contracts on Blockchain and run test scripts ( to set Roles)
+
+```
+truffle test
+```
+
+### Step2: adpat Smart contract address
+* copy smart "contract address" (see example in screenshot below) into "SubscriptionRepository.js" code:
+
+![truffle deploy](/images/truffleTest.png)
+
+Replace XXX with copied "contract address" in the following code:
+
+```
+var contractInstance = new web3.eth.Contract(abi,'XXXXX'
+```
+>This manual step will be replaced by setting ENV variables in a build script, or doing it analog to truffle 
+
+### Step3: start Server 
 * install nodeJs
 
 ```
@@ -118,36 +152,6 @@ Windows: set PORT=XXXX
 Example:
 
 ![SubscriptionService](/images/localhost.png)
-
-
-### Blockchain & SmartContracts  DEV
-* download SmartContracts from Bitbucket repo
-
-```
-https://bitbucket.org/mobh/trecentoproject
-```
-* start ganache local test Blockchain with prefilled Accounts
-
-```
-sh runTestRpc.sh
-```
-
-* deploy smart contracts on Blockchain and run test scripts ( to set Roles)
-
-```
-truffle test
-```
-
-* copy smart "contract address" (see example in screenshot below) into "SubscriptionRepository.js" code:
-
-![truffle deploy](/images/truffleTest.png)
-
-Replace XXX with copied "contract address" in the following code:
-
-```
-var contractInstance = new web3.eth.Contract(abi,'XXXXX'
-```
->This manual step will be replaced by setting ENV variables in a build script, or doing it analog to truffle 
 
 
 ## Security Aspects
