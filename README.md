@@ -134,15 +134,15 @@ https://bitbucket.org/mobh/trecentoproject
 sh runTestRpc.sh
 ```
 
-* deploy smart contracts on Blockchain
+* deploy smart contracts on Blockchain and run test scripts ( to set Roles)
 
 ```
-truffle deploy
+truffle test
 ```
 
 * copy smart "contract address" (see example in screenshot below) into "SubscriptionRepository.js" code:
 
-![truffle deploy](/images/truffleDeploy.png)
+![truffle deploy](/images/truffleTest.png)
 
 Replace XXX with copied "contract address" in the following code:
 

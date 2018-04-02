@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+ 
+</head>
+<h2>Subscribe to buy OpenFundToken</h2>
+
+<form action="/api/subscriptions/" method="post" name="subscriptForm">
+  <label for="investorId">Enter investorId: </label>
+  <input id="investorId" type="text" name="investorId" value="1">
+  <label for="token">Enter token: </label>
+  <input id="token" type="text" name="token" value="TRCOF">
+  <label for="quantity">Enter quantity: </label>
+  <input id="quantity" type="text" name="quantity" value="7">
+  <input type="submit" id="addButton" value="Add Subscription">
+</form>
+
+<br>
+<br>
+<span id="status"></span>
+<span class="hint">
+  <strong>Hint:</strong> open the browser developer console to view any errors and warnings.</span>
+
+
+</body>
+
+</html>

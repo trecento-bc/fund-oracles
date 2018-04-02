@@ -71,22 +71,24 @@ function setWeb3Provider(value) {
  */
 function addSubscription(req) {
   var ret = null;
+  console.log (req.body);
   const subscription = {
     id: subscriptions.length + 1,
-    investorId: req.body.investorId,
+    investorId: parseInt(req.body.investorId),
     token: req.body.token,
-    quantity: req.body.quantity,
+    quantity: parseInt(req.body.quantity),
     subScriptionDate: new Date()
   };
   const result = validateSubscription(subscription);
   console.log(result);
   if (!result) {
-    const investor = investors.find(arg => arg.id === subscription.investorId)
-    console.log(investor);
+    var investor = investors.find(arg => arg.id === subscription.investorId)
+    
     if (!investor) {
       // add investor if not yet existing
       investor = addInvestorCandidate(investor);
     }
+    console.log(`investor:${investor}`);
     if (investor) {
       SubscriptionRepositoryInstance.save(subscription);
       // TODO : assignOpenFundToken call should be scheduled only once a day
@@ -203,7 +205,7 @@ function assignOpenFundToken(subscription) {
   console.log(abi);
   //TODO: just for test , fix address at local chain ( ganache)
   console.log("***Instantiate OpenFundTokenLogic****");
-  var contractInstance = new web3.eth.Contract(abi, '0x8edfdaa54991e51353006746725661741c54a2fc', {
+  var contractInstance = new web3.eth.Contract(abi, '0xf092e2e236f282d0091e4d35471c4bb721ef65e0', {
     from: '0x0f21f6fb13310ac0e17205840a91da93119efbec', // account 0
     gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
   });

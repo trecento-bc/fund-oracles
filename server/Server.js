@@ -1,6 +1,7 @@
 const joi = require('joi');
 const express = require('express');
 const app = express();
+const fs = require('fs');
 app.use(express.json());
 var Web3 = require('web3');
 
@@ -44,8 +45,10 @@ app.get('/', (req, res) => {
   var getFundsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/funds' + '">Funds list </a>';
   var getratesUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/rates' + '">Rates list </a>';
   var getSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/subscriptions' + '">Subcriptions list </a>';
+  var addSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/form' + '">Add Subcription Form</a>';
 
-  res.send('<h1>Welcome to Subscription Service</h1> <br><ul><li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><li>' + getSubcriptionsUrl + '</li></ul><br><b>Note:</b> to Subscribe for buying <b>OpenFund</b> Tokens, Please check details in <b>README.md</b> File ');
+
+  res.send('<h1>Welcome to Subscription Service</h1> <br><ul><li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><li>' + getSubcriptionsUrl + '</li><br><li>' + addSubcriptionsUrl + '</li></ul><br><b>Note:</b> to Subscribe for buying <b>OpenFund</b> Tokens, Please check details in <b>README.md</b> File ');
 
 });
 
@@ -76,6 +79,23 @@ app.use('/api',
     next();
   }
   , subscriptionRoutes);
+
+  // open Form
+  
+  app.get('/form', function(req, res) {
+    fs.readFile('./server/form.html', function(error, content) {
+        if (error) {
+          console.log(error);
+            res.writeHead(500);
+            res.end();
+        }
+        else {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(content, 'utf-8');
+        }
+    });
+});
+
 
 // Start Server on PORT ( example, export PORT = 3000)
 const port = process.env.PORT || 8000;

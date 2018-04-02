@@ -1,5 +1,8 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const router = express.Router();
+
+var urlencodedParser = bodyParser.urlencoded({ extended: true });
 
 var SubscriptionService = require('../../server/SubscriptionService');
 
@@ -19,7 +22,7 @@ router.get('/subscriptions', function (req, res) {
   res.send(subscriptions);
 });
 
-router.post('/subscriptions', function (req, res) {
+router.post('/subscriptions', urlencodedParser,  function (req, res) {
   //Set web3 Provider
   SubscriptionService.setWeb3Provider(req.web3);
   // add Subscription 
@@ -31,6 +34,7 @@ router.post('/subscriptions', function (req, res) {
     console.log (Object.prototype.toString.call(ret));
     res.status(400).send(ret);
   } else {
+    console.log (`ret :${ret}`);
     //error
     res.status(400).send('subscription could not be added');  
   }
