@@ -33,8 +33,10 @@ The test server will be extended with simple forms to allow POST /PUT/ Delete wi
 
 ### Models & Database
 
-The model and the data used in the services is defined in the models und the database classes under the following Folders:
+The model and the data used in the services is defined in the models and the database classes under the following Folders:
+
 * models
+
 * database
 
 ### Data
@@ -58,7 +60,7 @@ const subscriptions = [  { id:1, investorId: 1, token: 'TRCOF', quantity:2, subS
 
 Service for investors to subscribe for buying OpenFundTokens (can be extended to support other Tokens).
 
-The service implements the following features ( see also the bpmn Process diagramm linked below "OpenFundContract_Subscribe_Process.bpmn":
+The service implements the following features ( see also the bpmn Process diagramm linked below):
 
 * validate subscription
 
