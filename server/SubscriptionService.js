@@ -199,13 +199,11 @@ function etherAmount(euroValue) {
 function assignOpenFundToken(subscription) {
   // declare contract 
   const OpenFund_json = require('../contracts_api/OpenFundTokenLogic.json');
-  const Token_json = require('../contracts_api/Math.json');
   abi = OpenFund_json.abi;
-  //abi = Math_json.abi;
   console.log(abi);
   //TODO: just for test , fix address at local chain ( ganache)
   console.log("***Instantiate OpenFundTokenLogic****");
-  var contractInstance = new web3.eth.Contract(abi, '0x125823729b474b52f8e9672cf88a3517035edb48', {
+  var contractInstance = new web3.eth.Contract(abi, '0x8edfdaa54991e51353006746725661741c54a2fc', {
     from: '0x0f21f6fb13310ac0e17205840a91da93119efbec', // account 0
     gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
   });
@@ -246,17 +244,12 @@ function assignOpenFundToken(subscription) {
       console.log(contractInstance.options.address);
       // Call Smartcontract to transfer Ether to the openTokenFund contract
       // and adpat the investor balance, Investor address must be in allowances
-
-      // using the promise
-      contractInstance.methods.transfer(accountFrom, accountTo, valueInEther).call({ from: accountFrom })
+      contractInstance.methods.transfer(accountFrom, accountTo, valueInEther).call({ from: accountFrom,  gas: '10000000' })
         .then(function (result) {
           console.log(result);
         }).catch((err) => {
           console.log(err);
         });
-
-     
-
     });
 
 

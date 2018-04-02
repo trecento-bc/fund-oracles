@@ -7,9 +7,9 @@
     <bpmn:laneSet>
       <bpmn:lane id="Lane_0fgynl3" name="SubscriptionService.js (Service de recolte)">
         <bpmn:flowNodeRef>IntermediateThrowEvent_0whoqfm</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>UserTask_0mlc3ow</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_16nie2l</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Task_194dpzi</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>UserTask_0mlc3ow</bpmn:flowNodeRef>
         <bpmn:childLaneSet xsi:type="bpmn:tLaneSet" />
       </bpmn:lane>
       <bpmn:lane id="Lane_0m7gg8h" name="Investor">
@@ -46,7 +46,7 @@
     <bpmn:serviceTask id="Task_08vloue" name="manage white list">
       <bpmn:outgoing>SequenceFlow_0gcf8xo</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:task id="UserTask_09ywbra" name="attribute OpenFund-Token mint-OpenFundToken">
+    <bpmn:task id="UserTask_09ywbra" name="attribute OpenFund-Token ">
       <bpmn:incoming>SequenceFlow_1ejjpwx</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_0b9xzox</bpmn:outgoing>
     </bpmn:task>
@@ -84,24 +84,24 @@
       <bpmn:outgoing>SequenceFlow_1lj9vux</bpmn:outgoing>
       <bpmn:timerEventDefinition />
     </bpmn:intermediateCatchEvent>
-    <bpmn:serviceTask id="UserTask_0mlc3ow" name="add to list of potential investors ( addInvestor-Candiate )">
-      <bpmn:incoming>SequenceFlow_0dteigy</bpmn:incoming>
-      <bpmn:outgoing>SequenceFlow_0tuk03y</bpmn:outgoing>
-    </bpmn:serviceTask>
-    <bpmn:task id="Task_16nie2l" name="check valuations ( getNav-Valuations )">
+    <bpmn:task id="Task_16nie2l" name="check valuations ( getNavValuationsInEuro )">
       <bpmn:incoming>SequenceFlow_1lj9vux</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_11nka6z</bpmn:outgoing>
     </bpmn:task>
-    <bpmn:serviceTask id="Task_194dpzi" name="calculate amount of OpenFund-Tokens (calculateTokenAmount)">
+    <bpmn:serviceTask id="Task_194dpzi" name="calculate amount of OpenFund-Tokens (assignOpenFundToken)">
       <bpmn:incoming>SequenceFlow_1roiv47</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1ejjpwx</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="SequenceFlow_0tuk03y" sourceRef="UserTask_0mlc3ow" targetRef="IntermediateThrowEvent_0whoqfm" />
     <bpmn:sequenceFlow id="SequenceFlow_1lj9vux" sourceRef="IntermediateThrowEvent_0whoqfm" targetRef="Task_16nie2l" />
-    <bpmn:task id="Task_0lu9swn" name="deliver valuations">
+    <bpmn:task id="Task_0lu9swn" name="deliver valuations in Euro &#38; Ether">
       <bpmn:incoming>SequenceFlow_11nka6z</bpmn:incoming>
       <bpmn:outgoing>SequenceFlow_1roiv47</bpmn:outgoing>
     </bpmn:task>
+    <bpmn:serviceTask id="UserTask_0mlc3ow" name="add potential investor ( addInvestor-Candiate + addSubscription)">
+      <bpmn:incoming>SequenceFlow_0dteigy</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0tuk03y</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_133t4aj">
@@ -141,12 +141,10 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="SequenceFlow_0tuk03y_di" bpmnElement="SequenceFlow_0tuk03y">
-        <di:waypoint xsi:type="dc:Point" x="303" y="238" />
-        <di:waypoint xsi:type="dc:Point" x="324" y="238" />
-        <di:waypoint xsi:type="dc:Point" x="324" y="238" />
+        <di:waypoint xsi:type="dc:Point" x="305" y="238" />
         <di:waypoint xsi:type="dc:Point" x="345" y="238" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="294" y="231.5" width="90" height="13" />
+          <dc:Bounds x="280" y="216.5" width="90" height="13" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="IntermediateCatchEvent_076i0kb_di" bpmnElement="IntermediateThrowEvent_0whoqfm">
@@ -171,7 +169,7 @@
       <bpmndi:BPMNEdge id="SequenceFlow_0dteigy_di" bpmnElement="SequenceFlow_0dteigy">
         <di:waypoint xsi:type="dc:Point" x="169" y="114" />
         <di:waypoint xsi:type="dc:Point" x="169" y="238" />
-        <di:waypoint xsi:type="dc:Point" x="203" y="238" />
+        <di:waypoint xsi:type="dc:Point" x="205" y="238" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="139" y="166" width="90" height="20" />
         </bpmndi:BPMNLabel>
@@ -240,7 +238,7 @@
         <dc:Bounds x="91" y="507" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_1m851ob_di" bpmnElement="UserTask_0mlc3ow">
-        <dc:Bounds x="203" y="198" width="100" height="80" />
+        <dc:Bounds x="205" y="198" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="ServiceTask_00a4m0s_di" bpmnElement="Task_194dpzi">
         <dc:Bounds x="571" y="198" width="100" height="80" />
