@@ -98,20 +98,31 @@ tbd
 
 * Step2: adpat Smart contract address in "SubscriptionRepository.js" File
 
-* Step3: start Server and add subscriptions
+* Step3: Install NodeJS  ( only needed on First Run)
+
+
+* Step4: start Server and add subscriptions
 
 
 ### Step1: Blockchain & SmartContracts Deployment
 * download SmartContracts from Bitbucket repo
 
 ```
-https://bitbucket.org/mobh/trecentoproject
+https://github.com/trecento-bc/fund-smart-contract
 ```
+
+* start terminal in the directory of downloaded "fund-smart-contract" project
+
+
+
 * start ganache local test Blockchain with prefilled Accounts
 
 ```
 sh runTestRpc.sh
 ```
+
+
+* start another terminal console in the directory of downloaded "fund-smart-contract" project
 
 * deploy smart contracts on Blockchain and run test scripts ( to set Roles)
 
@@ -131,7 +142,7 @@ var contractInstance = new web3.eth.Contract(abi,'XXXXX'
 ```
 >This manual step will be replaced by setting ENV variables in a build script, or doing it analog to truffle 
 
-### Step3: start Server 
+### Step3: Install NodeJS  ( only needed on First Run)
 * install nodeJs
 
 ```
@@ -143,9 +154,12 @@ download and install from  https://nodejs.org/en/
 npm install
 ```
 
+### Step3: start Server 
+
 * start server  
 ```
 node server/Server.js
+(ONLY for dev  "nodemon server/Server.js" for automatic restart on changes)
 ```
 * start Browser under Default port 8000
 or set other Port in the termina with the command

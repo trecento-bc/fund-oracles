@@ -4,23 +4,19 @@ const app = express();
 const fs = require('fs');
 app.use(express.json());
 var Web3 = require('web3');
+const LocalProvider = require('web3-local-signing-provider'); 
+//const LocalProvider = require('../local-provider');
 
 var web3;
-let web3Found = false
-// Checking if Web3 has been injected by the browser (Mist/MetaMask)
-if (typeof web3 !== 'undefined') {
-  // Use Mist/MetaMask's provider (Chrome)
-  web3Found = true
-  web3 = new Web3(web3.currentProvider)
-} else {
-  // TODO: Fall back to local node ( or https://mainnet.infura.io/ )
-  web3Found = false
-  web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8544'));
-}
-
-console.log('Eth Node Version: ', web3.version.node);
-console.log("Network: " ,web3.version.network, web3.version.ethereum);
-console.log('Connected to : ', web3.currentProvider);
+// Use LocalProvider (from "web3-local-signing-provider") & configured geth node  
+// TODO:  Get url and PORT of geth node form configuration 
+// TODO:  Get Private Key for local Providers from KeyStores
+const provider = new LocalProvider([
+  'fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa',
+  '8d8697970c933b856a02c5c2a9e1ead92b434d6cb724a0635219a1568a4cfd51'
+],
+new Web3.providers.HttpProvider('http://localhost:8544'));
+web3 = provider.web3;
 
 //routes
 var investorRoutes = require('../src/routes/investors');

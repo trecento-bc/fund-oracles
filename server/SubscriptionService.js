@@ -71,7 +71,7 @@ function setWeb3Provider(value) {
  */
 function addSubscription(req) {
   var ret = null;
-  console.log (req.body);
+  console.log(req.body);
   const subscription = {
     id: subscriptions.length + 1,
     investorId: parseInt(req.body.investorId),
@@ -83,7 +83,7 @@ function addSubscription(req) {
   console.log(result);
   if (!result) {
     var investor = investors.find(arg => arg.id === subscription.investorId)
-    
+
     if (!investor) {
       // add investor if not yet existing
       investor = addInvestorCandidate(investor);
@@ -200,12 +200,12 @@ function etherAmount(euroValue) {
  */
 function assignOpenFundToken(subscription) {
   // declare contract 
-  const OpenFund_json = require('../contracts_api/OpenFundTokenLogic.json');
+  const OpenFund_json = require('../contracts_api/OpenFundToken.json');
   abi = OpenFund_json.abi;
   console.log(abi);
   //TODO: just for test , fix address at local chain ( ganache)
-  console.log("***Instantiate OpenFundTokenLogic****");
-  var contractInstance = new web3.eth.Contract(abi, '0xf092e2e236f282d0091e4d35471c4bb721ef65e0', {
+  console.log("***Instantiate OpenFundToken****");
+  var contractInstance = new web3.eth.Contract(abi, '0xef03118e3e60d9003b6c622a2e94c39ebb6985f2', {
     from: '0x0f21f6fb13310ac0e17205840a91da93119efbec', // account 0
     gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
   });
@@ -241,17 +241,67 @@ function assignOpenFundToken(subscription) {
       accountTo = accounts[1];
       console.log(`accountTo: ${accountTo}`);
 
-      // TODO contract not instantiated !!!
       console.log(`contractInstance: ${contractInstance}`);
       console.log(contractInstance.options.address);
-      // Call Smartcontract to transfer Ether to the openTokenFund contract
-      // and adpat the investor balance, Investor address must be in allowances
-      contractInstance.methods.transfer(accountFrom, accountTo, valueInEther).call({ from: accountFrom,  gas: '10000000' })
-        .then(function (result) {
-          console.log(result);
-        }).catch((err) => {
-          console.log(err);
-        });
+
+
+      // Check Token balance of accountFrom Before
+      web3.eth.call({
+        to: contractInstance.options.address,
+        data: contractInstance.methods.balanceOf(accountFrom).encodeABI()
+      }).then(balance => {
+        console.log('balance of accountFrom: ', balance);
+
+      }).catch((err) => {
+        console.log(err);
+      });
+
+      // Check Token balance of accountTo Before
+      web3.eth.call({
+        to: contractInstance.options.address,
+        data: contractInstance.methods.balanceOf(accountTo).encodeABI()
+      }).then(balance => {
+        console.log('balance of accountTo Before: ', balance);
+
+      }).catch((err) => {
+        console.log(err);
+      });
+    
+      // dry Run, Transfer tokens to accountTo 
+      web3.eth.call({
+        to: contractInstance.options.address,
+        data: contractInstance.methods.transfer(accountTo, 1 ).encodeABI()
+      }).then(balance => {
+        console.log('balance of accountTo: ', balance);
+
+      }).catch((err) => {
+        console.log(err);
+      });
+
+
+       // sendTransaction, Transfer tokens to accountTo 
+
+      web3.eth.sendTransaction({
+        to: contractInstance.options.address,
+        data: contractInstance.methods.transfer(accountTo, 1 ).encodeABI()
+      }).then(reciept => {
+        console.log('TRX reciept: ', reciept);
+
+      }).catch((err) => {
+        console.log(err);
+      });
+
+       // Check Token balance of accountTo After
+       web3.eth.call({
+        to: contractInstance.options.address,
+        data: contractInstance.methods.balanceOf(accountTo).encodeABI()
+      }).then(balance => {
+        console.log('balance of accountTo After: ', balance);
+
+      }).catch((err) => {
+        console.log(err);
+      });
+
     });
 
 
