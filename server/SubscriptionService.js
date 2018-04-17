@@ -1,7 +1,5 @@
 /**
  * Subscription Service.
- *
- *
  *   Service pour la gestion entrée des investisseurs :
  * - Service pour récolter la liste des investisseurs et les montants 
  * - Ce service sera appelé manuellement pour les investisseurs en EUR
