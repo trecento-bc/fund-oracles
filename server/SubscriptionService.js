@@ -3,12 +3,9 @@
  *
  *
  *   Service pour la gestion entrée des investisseurs :
- * - les investisseurs peuvent acheter des parts uniquement dans une des monnaies de la NAV
  * - Service pour récolter la liste des investisseurs et les montants 
  * - Ce service sera appelé manuellement pour les investisseurs en EUR
  * - Reprise du service qui fait la liste agrégée par contributeur et le 
- * - modifier pour qu’il envoie cette liste au service de récolte
- * - Juste après le calcul de la NAV, les tokens sont distribués selon la valeur du moment
  * 
  */
 
@@ -31,8 +28,10 @@ const investors = InvestorRepositoryInstance.findAll();
 const FundRepositoryInstance = new FundRepository()
 const funds = new FundRepository().findAll();
 
-const SubscriptionRepositoryInstance = new SubscriptionRepository()
-const subscriptions = SubscriptionRepositoryInstance.findAll();
+var SubscriptionRepositoryInstance = new SubscriptionRepository()
+var subscriptions = [];
+
+SubscriptionRepositoryInstance.findAll().then (result => subscriptions = result);
 
 const RateRepositoryInstance = new RateRepository()
 const rates = RateRepositoryInstance.findAll();
@@ -69,7 +68,6 @@ function addSubscription(req) {
       // add investor if not yet existing
       investor = addInvestorCandidate(investor);
     }
-    console.log(`investor:${investor}`);
     if (investor) {
       SubscriptionRepositoryInstance.save(subscription);
       return subscription;
@@ -145,7 +143,8 @@ function addInvestorCandidate(investor) {
  *   Subscription[]
  */
 function getSubscriptions() {
-  return subscriptions;
+  SubscriptionRepositoryInstance.findAll().then (result => subscriptions = result);
+  return Promise.resolve(subscriptions);
 }
 
 /**

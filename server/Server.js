@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
   var addSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/form' + '">Add Subcription</a>';
   var assignOpenFundTokenUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/assignOpenFundTokens' + '">Assign OpenFundTokens to Subscribers</a>';
 
-  res.send('<h1>Welcome to Services Console</h1> <br><h2>Subscription Service</h2><ul><li>' + addSubcriptionsUrl + '</li><li>' + getSubcriptionsUrl + '</li></ul><br><hr><h2>OpenFundToken Assignment</h2><ul><li>' + assignOpenFundTokenUrl + '</li></ul><br><hr><h2>Master data</h2><ul> <li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><br></ul>');
+  res.send('<h1>Service Console</h1> <br><h2>Subscription Service</h2><ul><li>' + addSubcriptionsUrl + '</li><li>' + getSubcriptionsUrl + '</li></ul><br><hr><h2>OpenFundToken Assignment</h2><ul><li>' + assignOpenFundTokenUrl + '</li></ul><br><hr><h2>Master data</h2><ul> <li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><br></ul>');
 
 });
 

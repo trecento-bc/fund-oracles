@@ -1,3 +1,11 @@
+/**
+ * TokenAssigner Service.
+ *
+ *
+ * - les investisseurs peuvent acheter des parts uniquement dans une des monnaies de la NAV
+ * - Juste après le calcul de la NAV, les tokens sont distribués selon la valeur du moment
+ * 
+ */
 const joi = require('joi');
 const express = require('express');
 const app = express();
@@ -7,46 +15,59 @@ var schedule = require('node-schedule');
 var Web3 = require('web3');
 
 var SubscriptionRepository = require('../src/database/SubscriptionRepository');
-const SubscriptionRepositoryInstance = new SubscriptionRepository()
-const subscriptions = SubscriptionRepositoryInstance.findAll();
-
+var SubscriptionRepositoryInstance = new SubscriptionRepository()
+var subscriptions = [];
 
 const LocalProvider = require('web3-local-signing-provider');
-//const LocalProvider = require('../local-provider');
-
 var web3;
-// Use LocalProvider (from "web3-local-signing-provider") & configured geth node  
-// TODO:  Get url and PORT of geth node form configuration 
-// TODO:  Get Private Key for local Providers from KeyStores
-// Test Accounts:
-// Account[1] key: 8d8697970c933b856a02c5c2a9e1ead92b434d6cb724a0635219a1568a4cfd51
-// Account[6] key: 75986d9e701e574e888ed76bf084e7a15bcae8c203a84136e64e3ce18ab62b85
+var subscriberAccounts = [];
+var subscriberKeys = [];
 
-// Get the List of Subscriptions and build sorted array with hexPrivateKeys
-
-
-const provider = new LocalProvider([
-  'fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa',
-  '8d8697970c933b856a02c5c2a9e1ead92b434d6cb724a0635219a1568a4cfd51'
-],
-  new Web3.providers.HttpProvider('http://localhost:8544'));
-web3 = provider.web3;
+/**
+ * initWeb3LocalProvider
+ *
+ * Get the List of Subscriptions and build sorted array with hexPrivateKeys
+ *
+ */
+function initWeb3LocalProvider() {
+  //TODO First Account is the Default Owner Account
+  //TODO:  Get Private Key for local Providers from KeyStores
+  subscriberAccounts[0] = "0x0f21f6fb13310ac0e17205840a91da93119efbec";
+  subscriberKeys[0] = "fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa";
+  
+  //get Subscriber Accounts and keys
+  SubscriptionRepositoryInstance.findAll().then (
+    function(result){
+      subscriptions = result
+      var i = 1;
+      subscriptions.forEach(subscription => {
+        subscriberAccounts[i] = subscription.address;
+        subscriberKeys[i] = subscription.hexPrivateKey;
+        i++;
+      });
+      // Use LocalProvider (from "web3-local-signing-provider") & configured geth node  
+      // TODO:  Get url and PORT of geth node form configuration 
+      const provider = new LocalProvider(subscriberKeys,
+        new Web3.providers.HttpProvider('http://localhost:8544'));
+      web3 = provider.web3;
+    });
+}
 
 
 function scheduleDaily() {
   // Call Job to assign tokens for the new subscribers daily on 18:00
   var j = schedule.scheduleJob('18 * * *', function () {
-    subscriptions.forEach(subscription => {
-      assignOpenFundToken(subscription);
-    });
+     assignOpenFundToken() 
   });
 }
 
 function assignOpenFundToken() {
+  // init Web3
+  initWeb3LocalProvider();
   // declare contract 
   const OpenFund_json = require('../contracts_api/OpenFundToken.json');
   abi = OpenFund_json.abi;
-  console.log(abi);
+  //console.log(abi);
   //TODO: just for test , fix address at local chain ( ganache)
   console.log("***Instantiate OpenFundToken****");
   var contractInstance = new web3.eth.Contract(abi, '0xef03118e3e60d9003b6c622a2e94c39ebb6985f2', {
@@ -55,30 +76,29 @@ function assignOpenFundToken() {
   });
 
   subscriptions.forEach(subscription => {
+    console.log('>>>subscription: ', subscription);
     assignOpenFundTokenForSubscription(subscription, contractInstance);
   });
 }
 
 
 /**
- * Returns the transaction reciept.
+ * assignOpenFundTokenForSubscription
  *
  * Calls OpenFundToken Smart contract and Transfer Ether to buy tokens for 
  * all subscribed investors
  * 
- * @param {Subscription}   subscription        .
- * @return
- *   transactionReciept
+ * @param {Subscription}   subscription   
+ * @param {contractInstance}   Token smart contract     .
+ *
  */
+
 function assignOpenFundTokenForSubscription(subscription, contractInstance) {
-
-
-  var accounts;
+ var accounts;
   var accountFrom;
   var accountTo;
 
   if (subscription) {
-    console.log(subscription);
     // token value in Euro  
     const euroValue = getNavValuationsInEuro(subscription.token);
     console.log(euroValue);
@@ -129,19 +149,6 @@ function assignOpenFundTokenForSubscription(subscription, contractInstance) {
       }).catch((err) => {
         console.log(err);
       });
-
-      // dry Run, Transfer tokens to accountTo 
-      /*
-      web3.eth.call({
-        to: contractInstance.options.address,
-        data: contractInstance.methods.transfer(accountTo, 1 ).encodeABI()
-      }).then(balance => {
-        console.log('balance of accountTo: ', balance);
-
-      }).catch((err) => {
-        console.log(err);
-      });
-      */
 
       // sendTransaction, Transfer tokens to accountTo 
 
