@@ -23,8 +23,6 @@ router.get('/subscriptions', function (req, res) {
 });
 
 router.post('/subscriptions', urlencodedParser,  function (req, res) {
-  //Set web3 Provider
-  SubscriptionService.setWeb3Provider(req.web3);
   // add Subscription 
   const ret = SubscriptionService.addSubscription(req);
   if (ret && Object.prototype.toString.call(ret) === "[object object]") {

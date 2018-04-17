@@ -1,23 +1,109 @@
 <!DOCTYPE html>
 <html>
+<style>
+  input[type=text],
+  select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  input[type=submit]:hover {
+    background-color: #45a049;
+  }
+
+  div {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+  }
+</style>
+
+
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
- 
+
 </head>
 <h2>Subscribe to buy OpenFundToken</h2>
-
-<form action="/api/subscriptions/" method="post" name="subscriptForm">
-  <label for="investorId">Enter investorId: </label>
-  <input id="investorId" type="text" name="investorId" value="1">
-  <label for="token">Enter token: </label>
-  <input id="token" type="text" name="token" value="TRCOF">
-  <label for="quantity">Enter quantity: </label>
-  <input id="quantity" type="text" name="quantity" value="7">
-  <input type="submit" id="addButton" value="Add Subscription">
-</form>
-
+<div>
+  <form action="/api/subscriptions/" method="post" name="subscriptForm">
+    <div id="investorDiv">
+      <label for="investorId">Enter investorId: </label>
+      <select id="investor-dropdown" name="investorId">
+      </select>
+      <script>
+          investorDiv = (() => { prefillInvestors() })()
+          function prefillInvestors() {
+            let dropdown = document.getElementById('investor-dropdown');
+            dropdown.length = 0;
+        
+            let defaultOption = document.createElement('option');
+            defaultOption.text = 'Select Investor';
+        
+            dropdown.add(defaultOption);
+            dropdown.selectedIndex = 0;
+        
+            const url = 'http://localhost:8000/api/investors';
+        
+            fetch(url)
+              .then(
+                function (response) {
+                  if (response.status !== 200) {
+                    console.warn('Problem occured. Status Code: ' +
+                      response.status);
+                    return;
+                  }
+        
+                  // Examine the text in the response  
+                  response.json().then(function (data) {
+                    let option;
+        
+                    for (let i = 0; i < data.length; i++) {
+                      option = document.createElement('option');
+                      option.setAttribute("id", "investorId");
+                      option.text = data[i].firstName + " " + data[i].lastName + "("+data[i].id +")" ;
+                      option.value = data[i].id;
+                      dropdown.add(option);
+                    }
+                  });
+                }
+              )
+              .catch(function (err) {
+                console.error('Fetch Error -', err);
+              });
+          }
+        </script>
+    </div>
+    <!--<label for="investorId">Enter investorId: </label>
+    <input id="investorId" type="text" name="investorId" value="1"> !-->
+    <label for="token">Enter token: </label>
+    <input id="token" type="text" name="token" value="TRCOF">
+    <label for="quantity">Enter quantity: </label>
+    <input id="quantity" type="text" name="quantity" value="7">
+    <label for="address">Enter Ethereum Wallet address: </label>
+    <input id="address" type="text" name="address" value="0x205161cec3b55ca9a5997eeaf983b798d5dc8408">
+    <label for="hexPrivateKey">Enter hexPrivateKeys: </label>
+    <input id="hexPrivateKey" type="text" name="hexPrivateKey" value="8d8697970c933b856a02c5c2a9e1ead92b434d6cb724a0635219a1568a4cfd51">
+    <input type="submit" id="addButton" value="Add Subscription">
+  </form>
+</div>
 <br>
 <br>
 <span id="status"></span>

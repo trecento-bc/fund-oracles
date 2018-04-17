@@ -4,7 +4,7 @@ var Model = require('../../src/models/Subscription');
 
 function SubscriptionRepository() {
     this.subscriptions = [
-        new Model(1, 1, "TRCOF", 2, "2018-03-28T15:09:16Z")
+        new Model(1, 1, "TRCOF", 2, "2018-03-28T15:09:16Z", '0x0f21f6fb13310ac0e17205840a91da93119efbec','fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa')
     ];
 }
 
