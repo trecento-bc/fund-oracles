@@ -131,13 +131,13 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
 
         // token value in Euro  
         const euroValue = getNavValuationsInEuro(subscription.token);
-        //token value in ether /wei
-        const valueInEther = etherAmount(euroValue);
-        const valueInWei = web3.utils.toWei (valueInEther, 'ether');
+        // Calculate number of tokens to be assigned 
+        const amountOfTokens = subscription.depositedAmount / euroValue;
+        console.log ('amountOfTokens:',amountOfTokens );
         batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
         batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
         //batch.add(contractInstance.methods.transfer(accountTo, valueInEther).call.request({from:accountFrom, gas:300000}, callback));
-        batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, valueInWei).encodeABI() }, callback));
+        batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, amountOfTokens ).encodeABI() }, callback));
         batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
       });
       batch.execute();
@@ -158,7 +158,7 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
  */
 function getNavValuationsInEuro(token) {
   // Mock data
-  const euroValue = 100;
+  const euroValue = 1;
   return euroValue;
 }
 
@@ -173,7 +173,7 @@ function getNavValuationsInEuro(token) {
  */
 function etherAmount(euroValue) {
   // Mock data
-  var amount = "10";
+  var amount = "1";
   return amount;
 }
 
