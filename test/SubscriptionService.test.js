@@ -11,7 +11,7 @@ chai.use(chaiHttp);
 describe('Subscribe new Investor ', () => {
 
     it('it should not add a subscription without token', (done) => {
-        let subscription = { "investorId": 1, "quantity":8 }
+        let subscription = { "investorId": 1, "depositedAmount":8 }
         chai.request(server)
             .post('/api/subscriptions')
             .send(subscription)
@@ -22,7 +22,7 @@ describe('Subscribe new Investor ', () => {
       });
 
       it('it should not add a subscription with unkonwn token', (done) => {
-        let subscription = { "investorId": 1, "token": "XXXX", "quantity":8 }
+        let subscription = { "investorId": 1, "token": "XXXX", "depositedAmount":8 }
         chai.request(server)
             .post('/api/subscriptions')
             .send(subscription)

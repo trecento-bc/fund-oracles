@@ -37,9 +37,7 @@ SubscriptionRepository.prototype.findOne = function (id) {
 };
 SubscriptionRepository.prototype.save = function (subscription) {
     //  save a subscription 
-    console.log('>>>Before save: ',   subscriptions);
     subscriptions.push(subscription);
-    console.log('>>>After save: ',   subscriptions);
     this.writeFile( function(error, content) {
         if (error) {
           console.log(error);
@@ -49,7 +47,7 @@ SubscriptionRepository.prototype.save = function (subscription) {
         }
     });
 
-    return subscription;
+    return Promise.resolve(subscription);
 };
 SubscriptionRepository.prototype.remove = function (id) {
     // remove a subscription  

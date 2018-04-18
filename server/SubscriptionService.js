@@ -30,7 +30,6 @@ const funds = new FundRepository().findAll();
 var SubscriptionRepositoryInstance = new SubscriptionRepository()
 var subscriptions = [];
 
-SubscriptionRepositoryInstance.findAll().then (result => subscriptions = result);
 
 const RateRepositoryInstance = new RateRepository()
 const rates = RateRepositoryInstance.findAll();
@@ -46,13 +45,13 @@ const rates = RateRepositoryInstance.findAll();
  *   subscription object in success case and a string with error message 
  *  in error case
  */
-function addSubscription(req) {
+function addSubscription(req, list) {
   var ret = null;
   const subscription = {
-    id: subscriptions.length + 1,
+    id: list.length + 1,
     investorId: parseInt(req.body.investorId),
     token: req.body.token,
-    quantity: parseInt(req.body.quantity),
+    depositedAmount: parseInt(req.body.depositedAmount),
     subScriptionDate: new Date(),
     address:req.body.address,
     hexPrivateKey:req.body.hexPrivateKey
@@ -96,7 +95,7 @@ function validateSubscription(subscription) {
     id: joi.allow(),
     investorId: joi.number().required(),
     token: joi.string().min(3).required(),
-    quantity: joi.number().greater(0).required(),
+    depositedAmount: joi.number().greater(0).required(),
     subScriptionDate: joi.allow(),
     address:joi.string().min(20).required(),
     hexPrivateKey:joi.string().min(20).required()

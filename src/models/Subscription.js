@@ -1,10 +1,10 @@
-//example:   { id:1, investorId: 1, token: 'TRCOF', quantity:2, subScriptionDate:'2018-03-28T15:09:16Z', address:'0x0f21f6fb13310ac0e17205840a91da93119efbec', hexPrivateKey :'fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa' };
+//example:   { id:1, investorId: 1, token: 'TRCOF', depositedAmount:2, subScriptionDate:'2018-03-28T15:09:16Z', address:'0x0f21f6fb13310ac0e17205840a91da93119efbec', hexPrivateKey :'fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa' };
 
-function Subscription (id, investorId, token, quantity, subScriptionDate, address, hexPrivateKey) {       
+function Subscription (id, investorId, token, depositedAmount, subScriptionDate, address, hexPrivateKey) {       
   this.id = id || null;
   this.investorId  = investorId  || null;
   this.token  = token  || null;
-  this.quantity  = quantity  || null;
+  this.depositedAmount  = depositedAmount  || null;
   this.subScriptionDate  = subScriptionDate  || null;
   this.address = address;
   this.hexPrivateKey = hexPrivateKey;
