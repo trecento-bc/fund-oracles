@@ -10,6 +10,7 @@
 const joi = require('joi');
 const express = require('express');
 const app = express();
+const config = require('./config');
 app.use(express.json());
 
 

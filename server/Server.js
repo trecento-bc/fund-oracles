@@ -1,7 +1,14 @@
+/**
+ *   Server Console
+ *   Simple Web Console to start Services and manage Master Data 
+ * 
+ */
+
 const joi = require('joi');
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const config = require('./config');
 app.use(express.json());
 
 //routes
@@ -16,7 +23,7 @@ const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const cors = require('cors')
 
 var corsOptions = {
-  origin: 'localhost',
+  origin: config.app.host,
   optionsSuccessStatus: 200 // for old brwosers
 }
 app.use(cors(corsOptions))
@@ -87,8 +94,8 @@ app.use('/api',
   , rateRoutes);
 
 
-// Start Server on PORT ( example, export PORT = 3000)
-const port = process.env.PORT || 8000;
+
+const port = config.app.port;
 app.listen(port, () => {
   console.log(`Server started on ${port}!`);
 });

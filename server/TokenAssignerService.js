@@ -8,6 +8,7 @@ const joi = require('joi');
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const config = require('./config');
 app.use(express.json());
 var schedule = require('node-schedule');
 var Web3 = require('web3');
@@ -27,13 +28,14 @@ var subscriberKeys = [];
  *
  */
 function initWeb3LocalProvider() {
- 
-  //TODO First Account is the Default Owner Account
-  //TODO:  Get Private Key for local Providers from KeyStores
-  subscriberAccounts[0] = "0x0f21f6fb13310ac0e17205840a91da93119efbec";
-  subscriberKeys[0] = "fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa";
+  const { ethereumNode: { host, port} } = config;
+  const connectionString = `http://${host}:${port}`;
+  
+  // First Account is the Default Owner Account of the contract
+  subscriberAccounts[0] = config.openFundTokenContract.ownerAddress;
+  subscriberKeys[0] = config.openFundTokenContract.ownerKey;
 
-  //get Subscriber Accounts and keys
+  //get all Subscriber Accounts and their resp. keys
   SubscriptionRepositoryInstance.findAll().then(
     function (result) {
       subscriptions = result
@@ -46,7 +48,7 @@ function initWeb3LocalProvider() {
       // Use LocalProvider (from "web3-local-signing-provider") & configured geth node  
       // TODO:  Get url and PORT of geth node form configuration 
       const provider = new LocalProvider(subscriberKeys,
-        new Web3.providers.HttpProvider('http://localhost:8544'));
+        new Web3.providers.HttpProvider(connectionString));
        web3 = provider.web3;
        //console.log('web3:', web3);
     });
@@ -74,9 +76,9 @@ function assignOpenFundToken() {
       //console.log(abi);
       //TODO: configure the address of the contract ( now is  local address on local chain ganache)
       console.log("***Instantiate OpenFundToken****");
-      var contractInstance = new web3.eth.Contract(abi, '0xef03118e3e60d9003b6c622a2e94c39ebb6985f2', {
-        from: '0x0f21f6fb13310ac0e17205840a91da93119efbec', // account 0
-        gasPrice: '20000000000' // default gas price in wei, 20 gwei in this case
+      var contractInstance = new web3.eth.Contract(abi, config.openFundTokenContract.contractAddress, {
+        from: config.openFundTokenContract.ownerAddress, // owner account 
+        gasPrice: config.openFundTokenContract.defaultGasPrice // default gas price in wei, 20 gwei in this case
       });
       subscriptions.forEach(subscription => {
         assignOpenFundTokenForSubscription(subscription, contractInstance, web3);
