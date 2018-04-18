@@ -48,7 +48,6 @@ const rates = RateRepositoryInstance.findAll();
  */
 function addSubscription(req) {
   var ret = null;
-  console.log(req.body);
   const subscription = {
     id: subscriptions.length + 1,
     investorId: parseInt(req.body.investorId),
@@ -59,7 +58,6 @@ function addSubscription(req) {
     hexPrivateKey:req.body.hexPrivateKey
   };
   const result = validateSubscription(subscription);
-  console.log(result);
   if (!result) {
     var investor = investors.find(arg => arg.id === subscription.investorId)
 

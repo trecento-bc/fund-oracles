@@ -28,9 +28,9 @@ var subscriberKeys = [];
  *
  */
 function initWeb3LocalProvider() {
-  const { ethereumNode: { host, port} } = config;
+  const { ethereumNode: { host, port } } = config;
   const connectionString = `http://${host}:${port}`;
-  
+
   // First Account is the Default Owner Account of the contract
   subscriberAccounts[0] = config.openFundTokenContract.ownerAddress;
   subscriberKeys[0] = config.openFundTokenContract.ownerKey;
@@ -45,12 +45,11 @@ function initWeb3LocalProvider() {
         subscriberKeys[i] = subscription.hexPrivateKey;
         i++;
       });
-      // Use LocalProvider (from "web3-local-signing-provider") & configured geth node  
-      // TODO:  Get url and PORT of geth node form configuration 
+      // instantiate LocalProvider (from "web3-local-signing-provider") 
+      // using configured geth node and array of signing keys 
       const provider = new LocalProvider(subscriberKeys,
         new Web3.providers.HttpProvider(connectionString));
-       web3 = provider.web3;
-       //console.log('web3:', web3);
+      web3 = provider.web3;
     });
   return Promise.resolve();
 }
@@ -73,17 +72,17 @@ function assignOpenFundToken() {
       // declare contract 
       const OpenFund_json = require('../contracts_api/OpenFundToken.json');
       abi = OpenFund_json.abi;
-      //console.log(abi);
-      //TODO: configure the address of the contract ( now is  local address on local chain ganache)
       console.log("***Instantiate OpenFundToken****");
       var contractInstance = new web3.eth.Contract(abi, config.openFundTokenContract.contractAddress, {
         from: config.openFundTokenContract.ownerAddress, // owner account 
         gasPrice: config.openFundTokenContract.defaultGasPrice // default gas price in wei, 20 gwei in this case
       });
+      assignOpenFundTokenForSubscription(subscriptions[0], contractInstance, web3);
+      /*
       subscriptions.forEach(subscription => {
         assignOpenFundTokenForSubscription(subscription, contractInstance, web3);
       });
-
+      */
     }
   );
 
@@ -110,77 +109,41 @@ function assignOpenFundTokenForSubscription(subscription, contractInstance, web3
   if (subscription) {
     // token value in Euro  
     const euroValue = getNavValuationsInEuro(subscription.token);
-    console.log(euroValue);
     //convert euroValue to ether
     const valueInEther = etherAmount(euroValue);
     //const valueInWei = web3.toWei(valueInEther, 'ether');
-    console.log(valueInEther);
     // Get the accounts 
     web3.eth.getAccounts(function (err, accs) {
       if (err != null) {
         console.log("There was an error fetching accounts.");
         return;
       }
-
       if (accs.length == 0) {
         console.log("Couldn't get any accounts! Make sure  Ethereum client is configured correctly.");
         return;
       }
-
       accounts = accs;
       accountFrom = accounts[0];
       console.log(`accountFrom: ${accountFrom}`);
       accountTo = subscription.address;
       console.log(`accountTo: ${accountTo}`);
 
-      console.log(`contractInstance: ${contractInstance}`);
-      console.log(contractInstance.options.address);
+      var callback = function (err, r) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(r);
+        }
 
+      };
 
-      // Check Token balance of accountFrom Before
-      web3.eth.call({
-        to: contractInstance.options.address,
-        data: contractInstance.methods.balanceOf(accountFrom).encodeABI()
-      }).then(balanceFrom => {
-        console.log('balance of accountFrom Before: ', balanceFrom);
-
-      }).catch((err) => {
-        console.log(err);
-      });
-
-      // Check Token balance of accountTo Before
-      web3.eth.call({
-        to: contractInstance.options.address,
-        data: contractInstance.methods.balanceOf(accountTo).encodeABI()
-      }).then(balanceTo => {
-        console.log('balance of accountTo Before: ', balanceTo);
-
-      }).catch((err) => {
-        console.log(err);
-      });
-
-      // sendTransaction, Transfer tokens to accountTo 
-
-      web3.eth.sendTransaction({
-        to: contractInstance.options.address,
-        data: contractInstance.methods.transfer(accountTo, 1).encodeABI()
-      }).then(reciept => {
-        console.log('TRX reciept: ', reciept);
-
-      }).catch((err) => {
-        console.log(err);
-      });
-
-      // Check Token balance of accountTo After
-      web3.eth.call({
-        to: contractInstance.options.address,
-        data: contractInstance.methods.balanceOf(accountTo).encodeABI()
-      }).then(balance => {
-        console.log('balance of accountTo After: ', balance);
-
-      }).catch((err) => {
-        console.log(err);
-      });
+      var batch = new web3.BatchRequest();
+      batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
+      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
+      //batch.add(contractInstance.methods.transfer(accountTo, valueInEther).call.request({from:accountFrom, gas:300000}, callback));
+      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, valueInEther).encodeABI() }, callback));
+      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
+      batch.execute();
 
     });
   }
