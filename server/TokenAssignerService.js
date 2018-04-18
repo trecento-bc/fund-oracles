@@ -77,12 +77,7 @@ function assignOpenFundToken() {
         from: config.openFundTokenContract.ownerAddress, // owner account 
         gasPrice: config.openFundTokenContract.defaultGasPrice // default gas price in wei, 20 gwei in this case
       });
-      assignOpenFundTokenForSubscription(subscriptions[0], contractInstance, web3);
-      /*
-      subscriptions.forEach(subscription => {
-        assignOpenFundTokenForSubscription(subscription, contractInstance, web3);
-      });
-      */
+      assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3);
     }
   );
 
@@ -101,17 +96,12 @@ function assignOpenFundToken() {
  *
  */
 
-function assignOpenFundTokenForSubscription(subscription, contractInstance, web3) {
+function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3) {
   var accounts;
   var accountFrom;
   var accountTo;
 
-  if (subscription) {
-    // token value in Euro  
-    const euroValue = getNavValuationsInEuro(subscription.token);
-    //convert euroValue to ether
-    const valueInEther = etherAmount(euroValue);
-    //const valueInWei = web3.toWei(valueInEther, 'ether');
+  if (subscriptions) {
     // Get the accounts 
     web3.eth.getAccounts(function (err, accs) {
       if (err != null) {
@@ -125,9 +115,6 @@ function assignOpenFundTokenForSubscription(subscription, contractInstance, web3
       accounts = accs;
       accountFrom = accounts[0];
       console.log(`accountFrom: ${accountFrom}`);
-      accountTo = subscription.address;
-      console.log(`accountTo: ${accountTo}`);
-
       var callback = function (err, r) {
         if (err) {
           console.log(err);
@@ -136,13 +123,23 @@ function assignOpenFundTokenForSubscription(subscription, contractInstance, web3
         }
 
       };
-
       var batch = new web3.BatchRequest();
-      batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
-      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
-      //batch.add(contractInstance.methods.transfer(accountTo, valueInEther).call.request({from:accountFrom, gas:300000}, callback));
-      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, valueInEther).encodeABI() }, callback));
-      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
+
+      subscriptions.forEach(subscription => {
+        accountTo = subscription.address;
+        console.log(`accountTo: ${accountTo}`);
+
+        // token value in Euro  
+        const euroValue = getNavValuationsInEuro(subscription.token);
+        //token value in ether /wei
+        const valueInEther = etherAmount(euroValue);
+        const valueInWei = web3.utils.toWei (valueInEther, 'ether');
+        batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
+        batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
+        //batch.add(contractInstance.methods.transfer(accountTo, valueInEther).call.request({from:accountFrom, gas:300000}, callback));
+        batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, valueInWei).encodeABI() }, callback));
+        batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
+      });
       batch.execute();
 
     });
@@ -176,7 +173,7 @@ function getNavValuationsInEuro(token) {
  */
 function etherAmount(euroValue) {
   // Mock data
-  var amount = 10;
+  var amount = "10";
   return amount;
 }
 
