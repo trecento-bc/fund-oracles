@@ -83,7 +83,6 @@ function assignOpenFundToken() {
 
 }
 
-// distribute tokens for a single Subscription
 
 /**
  * assignOpenFundTokenForSubscription
