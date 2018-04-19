@@ -1,15 +1,15 @@
 {
   "contractName": "Math",
   "abi": [],
-  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a72305820228a65324a0a2b23f3fe5fc4574a8ad89dc46f54215207b61e154afb2d7964f70029",
-  "deployedBytecode": "0x6060604052600080fd00a165627a7a72305820228a65324a0a2b23f3fe5fc4574a8ad89dc46f54215207b61e154afb2d7964f70029",
+  "bytecode": "0x60606040523415600e57600080fd5b603580601b6000396000f3006060604052600080fd00a165627a7a723058207abd00fbd5f32fb52cc19bcaf55c4928bc0486bddcc8737c9be2541ccd0bbc770029",
+  "deployedBytecode": "0x6060604052600080fd00a165627a7a723058207abd00fbd5f32fb52cc19bcaf55c4928bc0486bddcc8737c9be2541ccd0bbc770029",
   "sourceMap": "1070:4393:0:-;;;;;;;;;;;;;;;;;",
   "deployedSourceMap": "1070:4393:0:-;;;;;",
   "source": "// Copyright (c) 2018 Company Inc.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//     http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n/// math.sol -- mixin for inline numerical wizardry\n\n// Copyright (C) 2015, 2016, 2017  DappHub, LLC\n\n// Licensed under the Apache License, Version 2.0 (the \"License\").\n// You may not use this file except in compliance with the License.\n\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND (express or implied).\n\npragma solidity ^0.4.19;\n\n\nlibrary Math {\n\n    // standard uint256 functions\n    function add(uint256 x, uint256 y) pure internal returns (uint256 z) {\n        require((z = x + y) >= x);\n    }\n\n    function sub(uint256 x, uint256 y) pure internal returns (uint256 z) {\n        require((z = x - y) <= x);\n    }\n\n    function mul(uint256 x, uint256 y) pure internal returns (uint256 z) {\n        z = x * y;\n        require((z == 0 && (x == 0 || y == 0)) || z >= (x > y ? x : y));\n    }\n\n    //division by zero is ignored and returns zero\n    function div(uint256 x, uint256 y) pure internal returns (uint256 z) {\n        z = y > 0 ? x / y : 0;\n    }\n\n    function min(uint256 x, uint256 y) pure internal returns (uint256 z) {\n        return x <= y ? x : y;\n    }\n\n    function max(uint256 x, uint256 y) pure internal returns (uint256 z) {\n        return x >= y ? x : y;\n    }\n\n    /*\n    uint128 functions (h is for half)\n     */\n\n    function hadd(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        require((z = x + y) >= x);\n    }\n\n    function hsub(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        require((z = x - y) <= x);\n    }\n\n    function hmul(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        require((z = x * y) >= x);\n    }\n\n    function hdiv(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        require(y > 0);\n        z = x / y;\n    }\n\n    function hmin(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        return x <= y ? x : y;\n    }\n\n    function hmax(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        return x >= y ? x : y;\n    }\n\n    /*\n    int256 functions\n     */\n\n    function imin(int256 x, int256 y) pure internal returns (int256 z) {\n        return x <= y ? x : y;\n    }\n\n    function imax(int256 x, int256 y) pure internal returns (int256 z) {\n        return x >= y ? x : y;\n    }\n\n    /*\n    WAD math\n     */\n\n    uint128 constant WAD = 10 ** 18;\n\n    function wadd(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hadd(x, y);\n    }\n\n    function wsub(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hsub(x, y);\n    }\n\n    function wmul(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        z = cast((uint256(x) * y + WAD / 2) / WAD);\n    }\n\n    function wdiv(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        z = cast((uint256(x) * WAD + y / 2) / y);\n    }\n\n    function wmin(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hmin(x, y);\n    }\n\n    function wmax(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hmax(x, y);\n    }\n\n    /*\n    RAY math\n     */\n\n    uint128 constant RAY = 10 ** 27;\n\n    function radd(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hadd(x, y);\n    }\n\n    function rsub(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hsub(x, y);\n    }\n\n    function rmul(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        z = cast((uint256(x) * y + RAY / 2) / RAY);\n    }\n\n    function rdiv(uint128 x, uint128 y) pure internal returns (uint128 z) {\n        z = cast((uint256(x) * RAY + y / 2) / y);\n    }\n\n    function rpow(uint128 x, uint64 n) pure internal returns (uint128 z) {\n        // This famous algorithm is called \"exponentiation by squaring\"\n        // and calculates x^n with x as fixed-point and n as regular unsigned.\n        //\n        // It's O(log n), instead of O(n) for naive repeated multiplication.\n        //\n        // These facts are why it works:\n        //\n        //  If n is even, then x^n = (x^2)^(n/2).\n        //  If n is odd,  then x^n = x * x^(n-1),\n        //   and applying the equation for even x gives\n        //    x^n = x * (x^2)^((n-1) / 2).\n        //\n        //  Also, EVM division is flooring and\n        //    floor[(n-1) / 2] = floor[n / 2].\n\n        z = n % 2 != 0 ? x : RAY;\n\n        for (n /= 2; n != 0; n /= 2) {\n            x = rmul(x, x);\n\n            if (n % 2 != 0) {\n                z = rmul(z, x);\n            }\n        }\n    }\n\n    function rmin(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hmin(x, y);\n    }\n\n    function rmax(uint128 x, uint128 y) pure internal returns (uint128) {\n        return hmax(x, y);\n    }\n\n    function cast(uint256 x) pure internal returns (uint128 z) {\n        require((z = uint128(x)) == x);\n    }\n}\n",
-  "sourcePath": "/Users/mbenhajla/Documents/Blockchain_Projekte/Trecento/trecentoproject/contracts/Math.sol",
+  "sourcePath": "/Users/mbenhajla/Documents/TrecentoProject/fund-smart-contract/contracts/Math.sol",
   "ast": {
     "attributes": {
-      "absolutePath": "/Users/mbenhajla/Documents/Blockchain_Projekte/Trecento/trecentoproject/contracts/Math.sol",
+      "absolutePath": "/Users/mbenhajla/Documents/TrecentoProject/fund-smart-contract/contracts/Math.sol",
       "exportedSymbols": {
         "Math": [
           606
@@ -186,7 +186,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -480,7 +480,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -859,7 +859,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -2141,7 +2141,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -2435,7 +2435,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -2729,7 +2729,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -3023,7 +3023,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -8347,7 +8347,7 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 2946,
+                              "referencedDeclaration": 2918,
                               "type": "function (bool) pure",
                               "value": "require"
                             },
@@ -8526,9 +8526,9 @@
     "9": {
       "events": {},
       "links": {},
-      "address": "0x1c7b05dc6b9bc5cdfbce5faa31b005dd13565fab"
+      "address": "0x4b846bd20e2e48b2bbc9b3da22206623e4981cf5"
     }
   },
   "schemaVersion": "1.0.1",
-  "updatedAt": "2018-04-01T16:19:53.243Z"
+  "updatedAt": "2018-04-19T11:32:48.945Z"
 }

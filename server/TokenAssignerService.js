@@ -35,7 +35,7 @@ function initWeb3LocalProvider() {
   var minterAccount = config.openFundTokenContract.minterAccount;
   var minterAccountKey = config.openFundTokenContract.ownerKey;
 
-  //get all Subscriber Accounts and their resp. keys
+  //get all Subscriber Accounts
   return SubscriptionRepositoryInstance.findAll().then(
     function (result) {
       subscriptions = result
@@ -45,7 +45,7 @@ function initWeb3LocalProvider() {
         i++;
       });
       // instantiate LocalProvider (from "web3-local-signing-provider") 
-      // using configured geth node and array of signing keys 
+      // using configured geth node and the signing key of the minter
       const provider = new LocalProvider(minterAccountKey,
         new Web3.providers.HttpProvider(connectionString));
       return provider.web3;
@@ -131,7 +131,8 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
       batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
       batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
       //TODO : MINTFOR not Transfer
-      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, amountOfTokens).encodeABI() }, callback));
+      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountOfTokens).encodeABI() }, callback));
+      //batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, amountOfTokens).encodeABI() }, callback));
       batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
     });
     batch.execute();

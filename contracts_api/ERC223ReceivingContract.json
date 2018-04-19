@@ -29,13 +29,13 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "// Copyright (c) 2018 Company Inc.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//     http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n\npragma solidity ^0.4.19;\n\n\n/**\n * @title Contract that will work with ERC223 tokens.\n */\ninterface ERC223ReceivingContract {\n    /**\n     * @dev Standard ERC223 function that will handle incoming token transfers.\n     *\n     * @param src  Token sender address.\n     * @param wad  Amount of tokens.\n     * @param _data  Transaction metadata.\n     */\n    function tokenFallback(address src, uint wad, bytes _data) public;\n}\n",
-  "sourcePath": "/Users/mbenhajla/Documents/Blockchain_Projekte/Trecento/trecentoproject/contracts/tokens/ERC223_receiving_contract.sol",
+  "sourcePath": "/Users/mbenhajla/Documents/TrecentoProject/fund-smart-contract/contracts/tokens/ERC223_receiving_contract.sol",
   "ast": {
     "attributes": {
-      "absolutePath": "/Users/mbenhajla/Documents/Blockchain_Projekte/Trecento/trecentoproject/contracts/tokens/ERC223_receiving_contract.sol",
+      "absolutePath": "/Users/mbenhajla/Documents/TrecentoProject/fund-smart-contract/contracts/tokens/ERC223_receiving_contract.sol",
       "exportedSymbols": {
         "ERC223ReceivingContract": [
-          1550
+          1522
         ]
       }
     },
@@ -49,7 +49,7 @@
             ".19"
           ]
         },
-        "id": 1540,
+        "id": 1512,
         "name": "PragmaDirective",
         "src": "595:24:8"
       },
@@ -65,10 +65,10 @@
           "documentation": "@title Contract that will work with ERC223 tokens.",
           "fullyImplemented": false,
           "linearizedBaseContracts": [
-            1550
+            1522
           ],
           "name": "ERC223ReceivingContract",
-          "scope": 1551
+          "scope": 1523
         },
         "children": [
           {
@@ -82,7 +82,7 @@
               ],
               "name": "tokenFallback",
               "payable": false,
-              "scope": 1550,
+              "scope": 1522,
               "stateMutability": "nonpayable",
               "superFunction": null,
               "visibility": "public"
@@ -94,7 +94,7 @@
                     "attributes": {
                       "constant": false,
                       "name": "src",
-                      "scope": 1549,
+                      "scope": 1521,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -107,12 +107,12 @@
                           "name": "address",
                           "type": "address"
                         },
-                        "id": 1541,
+                        "id": 1513,
                         "name": "ElementaryTypeName",
                         "src": "971:7:8"
                       }
                     ],
-                    "id": 1542,
+                    "id": 1514,
                     "name": "VariableDeclaration",
                     "src": "971:11:8"
                   },
@@ -120,7 +120,7 @@
                     "attributes": {
                       "constant": false,
                       "name": "wad",
-                      "scope": 1549,
+                      "scope": 1521,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -133,12 +133,12 @@
                           "name": "uint",
                           "type": "uint256"
                         },
-                        "id": 1543,
+                        "id": 1515,
                         "name": "ElementaryTypeName",
                         "src": "984:4:8"
                       }
                     ],
-                    "id": 1544,
+                    "id": 1516,
                     "name": "VariableDeclaration",
                     "src": "984:8:8"
                   },
@@ -146,7 +146,7 @@
                     "attributes": {
                       "constant": false,
                       "name": "_data",
-                      "scope": 1549,
+                      "scope": 1521,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "bytes memory",
@@ -159,17 +159,17 @@
                           "name": "bytes",
                           "type": "bytes storage pointer"
                         },
-                        "id": 1545,
+                        "id": 1517,
                         "name": "ElementaryTypeName",
                         "src": "994:5:8"
                       }
                     ],
-                    "id": 1546,
+                    "id": 1518,
                     "name": "VariableDeclaration",
                     "src": "994:11:8"
                   }
                 ],
-                "id": 1547,
+                "id": 1519,
                 "name": "ParameterList",
                 "src": "970:36:8"
               },
@@ -180,22 +180,22 @@
                   ]
                 },
                 "children": [],
-                "id": 1548,
+                "id": 1520,
                 "name": "ParameterList",
                 "src": "1013:0:8"
               }
             ],
-            "id": 1549,
+            "id": 1521,
             "name": "FunctionDefinition",
             "src": "948:66:8"
           }
         ],
-        "id": 1550,
+        "id": 1522,
         "name": "ContractDefinition",
         "src": "684:332:8"
       }
     ],
-    "id": 1551,
+    "id": 1523,
     "name": "SourceUnit",
     "src": "595:422:8"
   },
@@ -205,5 +205,5 @@
   },
   "networks": {},
   "schemaVersion": "1.0.1",
-  "updatedAt": "2018-04-01T16:19:52.659Z"
+  "updatedAt": "2018-04-19T11:32:48.504Z"
 }
