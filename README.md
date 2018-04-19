@@ -50,7 +50,7 @@ Example:
 ```
 const investors = [  {id: 1, firstName: 'Jane', lastName:'Doe'}];
 const funds = [  { token: 'TRCOF', name: 'openfund'}];
-const subscriptions = [  { id:1, investorId: 1, token: 'TRCOF', depositedAmount:2, subScriptionDate:'2018-03-28T15:09:16Z',address: '0x0f21f6fb13310ac0e17205840a91da93119efbec', hexPrivateKey :'fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa' }];
+const subscriptions = [  { id:1, investorId: 1, token: 'TRCOF', depositedAmount:2, subScriptionDate:'2018-03-28T15:09:16Z',address: '0x0f21f6fb13310ac0e17205840a91da93119efbec' }];
 
 ```
 

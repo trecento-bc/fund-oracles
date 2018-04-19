@@ -40,6 +40,7 @@ const rates = RateRepositoryInstance.findAll();
  *  investor Subscription to subscribe for buying shares (OpenFundTokens)
  * 
  * @param {Subscription}   subscription
+ * @param {list}   list of all subscriptions
  * 
  * @return
  *   subscription object in success case and a string with error message 
@@ -53,8 +54,7 @@ function addSubscription(req, list) {
     token: req.body.token,
     depositedAmount: parseInt(req.body.depositedAmount),
     subScriptionDate: new Date(),
-    address:req.body.address,
-    hexPrivateKey:req.body.hexPrivateKey
+    address:req.body.address
   };
   const result = validateSubscription(subscription);
   if (!result) {
@@ -97,8 +97,7 @@ function validateSubscription(subscription) {
     token: joi.string().min(3).required(),
     depositedAmount: joi.number().greater(0).required(),
     subScriptionDate: joi.allow(),
-    address:joi.string().min(20).required(),
-    hexPrivateKey:joi.string().min(20).required()
+    address:joi.string().min(20).required()
   };
   const result = joi.validate(subscription, schema);
   if (result.error) {
@@ -139,8 +138,7 @@ function addInvestorCandidate(investor) {
  *   Subscription[]
  */
 function getSubscriptions() {
-  SubscriptionRepositoryInstance.findAll().then (result => subscriptions = result);
-  return Promise.resolve(subscriptions);
+  return SubscriptionRepositoryInstance.findAll();
 }
 
 /**

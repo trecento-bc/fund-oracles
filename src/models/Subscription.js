@@ -1,14 +1,12 @@
-//example:   { id:1, investorId: 1, token: 'TRCOF', depositedAmount:2, subScriptionDate:'2018-03-28T15:09:16Z', address:'0x0f21f6fb13310ac0e17205840a91da93119efbec', hexPrivateKey :'fdb2886b1ff5a0e60f9a4684e385aa7b77f064730304143f08ba96ca1a17effa' };
+//example:   { id:1, investorId: 1, token: 'TRCOF', depositedAmount:2, subScriptionDate:'2018-03-28T15:09:16Z', address:'0x0f21f6fb13310ac0e17205840a91da93119efbec' };
 
-function Subscription (id, investorId, token, depositedAmount, subScriptionDate, address, hexPrivateKey) {       
+function Subscription (id, investorId, token, depositedAmount, subScriptionDate, address) {       
   this.id = id || null;
   this.investorId  = investorId  || null;
   this.token  = token  || null;
   this.depositedAmount  = depositedAmount  || null;
   this.subScriptionDate  = subScriptionDate  || null;
   this.address = address;
-  this.hexPrivateKey = hexPrivateKey;
-
 }
 
 Subscription.prototype.getId = function() {
@@ -52,13 +50,6 @@ Subscription.prototype.setAddress = function(address) {
   this.address = address;
 }
 
-Subscription.prototype.getHexPrivateKey = function() {
-  return this.hexPrivateKey;
-}
-
-Subscription.prototype.setHexPrivateKey = function(hexPrivateKey) {
-  this.hexPrivateKey = hexPrivateKey;
-}
 
 Subscription.prototype.equals = function(otherSubscription) {
 

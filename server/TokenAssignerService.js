@@ -19,39 +19,38 @@ var subscriptions = [];
 
 const LocalProvider = require('web3-local-signing-provider');
 var subscriberAccounts = [];
-var subscriberKeys = [];
+
 
 /**
  * initWeb3LocalProvider
  *
- * Get the List of Subscriptions and build sorted array with hexPrivateKeys
+ * Get the List of Subscriptions and build sorted array with traget accounts
  *
  */
 function initWeb3LocalProvider() {
   const { ethereumNode: { host, port } } = config;
   const connectionString = `http://${host}:${port}`;
 
-  // First Account is the Default Owner Account of the contract
-  subscriberAccounts[0] = config.openFundTokenContract.ownerAddress;
-  subscriberKeys[0] = config.openFundTokenContract.ownerKey;
+  // Get the Minter Account
+  var minterAccount = config.openFundTokenContract.minterAccount;
+  var minterAccountKey = config.openFundTokenContract.ownerKey;
 
   //get all Subscriber Accounts and their resp. keys
-  SubscriptionRepositoryInstance.findAll().then(
+  return SubscriptionRepositoryInstance.findAll().then(
     function (result) {
       subscriptions = result
       var i = 1;
       subscriptions.forEach(subscription => {
         subscriberAccounts[i] = subscription.address;
-        subscriberKeys[i] = subscription.hexPrivateKey;
         i++;
       });
       // instantiate LocalProvider (from "web3-local-signing-provider") 
       // using configured geth node and array of signing keys 
-      const provider = new LocalProvider(subscriberKeys,
+      const provider = new LocalProvider(minterAccountKey,
         new Web3.providers.HttpProvider(connectionString));
-      web3 = provider.web3;
+      return provider.web3;
     });
-  return Promise.resolve();
+
 }
 
 // Schedule distribuion of tokens
@@ -68,14 +67,16 @@ function scheduleDaily() {
 function assignOpenFundToken() {
   // init Web3
   initWeb3LocalProvider().then(
-    function () {
+    function (result) {
+      web3 = result;
       // declare contract 
+      //TODO : JSON from Build Folder
       const OpenFund_json = require('../contracts_api/OpenFundToken.json');
       abi = OpenFund_json.abi;
       console.log("***Instantiate OpenFundToken****");
+      //TODO Get contract adress from JSON ( Build Folder) instead of config File
       var contractInstance = new web3.eth.Contract(abi, config.openFundTokenContract.contractAddress, {
-        from: config.openFundTokenContract.ownerAddress, // owner account 
-        gasPrice: config.openFundTokenContract.defaultGasPrice // default gas price in wei, 20 gwei in this case
+        from: config.openFundTokenContract.minterAccount
       });
       assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3);
     }
@@ -101,47 +102,40 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
   var accountTo;
 
   if (subscriptions) {
-    // Get the accounts 
-    web3.eth.getAccounts(function (err, accs) {
-      if (err != null) {
-        console.log("There was an error fetching accounts.");
-        return;
+
+    // Get minter Account
+    accountFrom = config.openFundTokenContract.minterAccount;
+    console.log(`accountFrom: ${accountFrom}`);
+
+    var callback = function (err, r) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(r);
       }
-      if (accs.length == 0) {
-        console.log("Couldn't get any accounts! Make sure  Ethereum client is configured correctly.");
-        return;
-      }
-      accounts = accs;
-      accountFrom = accounts[0];
-      console.log(`accountFrom: ${accountFrom}`);
-      var callback = function (err, r) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(r);
-        }
 
-      };
-      var batch = new web3.BatchRequest();
+    };
+    var batch = new web3.BatchRequest();
 
-      subscriptions.forEach(subscription => {
-        accountTo = subscription.address;
-        console.log(`accountTo: ${accountTo}`);
+    subscriptions.forEach(subscription => {
+      accountTo = subscription.address;
+      console.log(`accountTo: ${accountTo}`);
 
-        // token value in Euro  
-        const euroValue = getNavValuationsInEuro(subscription.token);
-        // Calculate number of tokens to be assigned 
-        const amountOfTokens = subscription.depositedAmount / euroValue;
-        console.log ('amountOfTokens:',amountOfTokens );
-        batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
-        batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
-        //batch.add(contractInstance.methods.transfer(accountTo, valueInEther).call.request({from:accountFrom, gas:300000}, callback));
-        batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, amountOfTokens ).encodeABI() }, callback));
-        batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
-      });
-      batch.execute();
-
+      // token value in Euro  
+      const euroValue = getNavValuationsInEuro(subscription.token);
+      // Calculate number of tokens to be assigned 
+      // TODO: use bignumber.js ( npm package), and decimal 1e18 ( as in token contract)
+      const amountOfTokens = subscription.depositedAmount / euroValue;
+      //TODO round up , amount of token to uint
+      console.log('amountOfTokens:', amountOfTokens);
+      batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
+      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
+      //TODO : MINTFOR not Transfer
+      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, amountOfTokens).encodeABI() }, callback));
+      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
     });
+    batch.execute();
+
   }
 }
 
