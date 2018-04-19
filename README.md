@@ -46,7 +46,7 @@ The Subscription data can be extended and is saved in a JSON File ( subscription
 [{"id":1,"investorId":1,"token":"TRCOF","depositedAmount":900,"subScriptionDate":"2018-04-19T07:36:36.454Z","address":"0x205161cec3b55ca9a5997eeaf983b798d5dc8408"},{"id":2,"investorId":1,"token":"TRCOF","depositedAmount":800,"subScriptionDate":"2018-04-19T07:52:57.953Z","address":"0x205161cec3b55ca9a5997eeaf983b798d5dc8408"},{"id":3,"investorId":1,"token":"TRCOF","depositedAmount":500,"subScriptionDate":"2018-04-19T07:55:19.107Z","address":"0x205161cec3b55ca9a5997eeaf983b798d5dc8408"}]
 ```
 
-The rest of the data ( master Data) like rates , investors, funds is for now mock data.
+The rest of the data ( master Data) like rates , investors, funds is for now is mock data.
 
 >The structure of the data is defined in the models folder.
 
@@ -150,8 +150,6 @@ truffle deploy
 
 ![truffle deploy](/images/truffleDeploy.png)
 
-Adapt openFundTokenContract "contractAddress" with copied in the config.js File:
-
 ```
 //Example ( Snippet from config.js File)
 ..
@@ -162,7 +160,7 @@ openFundTokenContract: {
 ```
 >This manual step will be replaced by setting ENV variables in a build script, or doing it analog to truffle 
 
-### Step3: Install NodeJS  ( only needed on First Run)
+### Step3: Install NodeJS  ( only needed on first Run)
 * install nodeJs
 
 ```
