@@ -107,14 +107,30 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
     accountFrom = config.openFundTokenContract.minterAccount;
     console.log(`accountFrom: ${accountFrom}`);
 
-    var callback = function (err, r) {
+    var callbackBalanceOfAccountFrom = function (err, r) {
       if (err) {
         console.log(err);
       } else {
-        console.log(r);
+        console.log('Token Balance Of AccountFrom:', r);
       }
-
     };
+
+    var callbackBalanceOfAccountTo = function (err, r) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('Token Balance Of AccountTo:', r);
+      }
+    };
+
+    var callbackMintFor = function (err, r) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('MintFor Transaction:', r);
+      }
+    };
+
     var batch = new web3.BatchRequest();
 
     subscriptions.forEach(subscription => {
@@ -123,17 +139,15 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
 
       // token value in Euro  
       const euroValue = getNavValuationsInEuro(subscription.token);
-      // Calculate number of tokens to be assigned 
       // TODO: use bignumber.js ( npm package), and decimal 1e18 ( as in token contract)
-      const amountOfTokens = subscription.depositedAmount / euroValue;
       //TODO round up , amount of token to uint
+      // Calculate number of tokens to be assigned 
+      const amountOfTokens = subscription.depositedAmount / euroValue;
       console.log('amountOfTokens:', amountOfTokens);
-      batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callback));
-      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
-      //TODO : MINTFOR not Transfer
-      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountOfTokens).encodeABI() }, callback));
-      //batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.transfer(accountTo, amountOfTokens).encodeABI() }, callback));
-      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callback));
+      batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountFrom));
+      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountTo));
+      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountOfTokens).encodeABI() }, callbackMintFor));
+      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountTo));
     });
     batch.execute();
 

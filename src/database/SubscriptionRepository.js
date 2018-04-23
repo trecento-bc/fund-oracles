@@ -17,7 +17,7 @@ SubscriptionRepository.prototype.findAll =  function () {
          
         }
         else {
-            console.log('>>>findAll: ',  JSON.parse(content));
+            console.log('subscriptions: ',  JSON.parse(content));
             subscriptions =  JSON.parse(content);
         }
     });
