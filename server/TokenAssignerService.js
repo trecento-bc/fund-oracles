@@ -73,7 +73,8 @@ function assignOpenFundToken() {
       //TODO : JSON from Build Folder
       const OpenFund_json = require('../contracts_api/OpenFundToken.json');
       abi = OpenFund_json.abi;
-      console.log("***Instantiate OpenFundToken****");
+      console.log("****************  ********************** ****");
+      console.log("Instantiate OpenFundToken");
       //TODO Get contract adress from JSON ( Build Folder) instead of config File
       var contractInstance = new web3.eth.Contract(abi, config.openFundTokenContract.contractAddress, {
         from: config.openFundTokenContract.minterAccount
@@ -105,21 +106,13 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
 
     // Get minter Account
     accountFrom = config.openFundTokenContract.minterAccount;
-    console.log(`accountFrom: ${accountFrom}`);
-
-    var callbackBalanceOfAccountFrom = function (err, r) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Token Balance Of AccountFrom:', r);
-      }
-    };
+    console.log(`Minter Account : ${accountFrom}`);
 
     var callbackBalanceOfAccountTo = function (err, r) {
       if (err) {
         console.log(err);
       } else {
-        console.log('Token Balance Of AccountTo:', r);
+        console.log('Token Balance Of Subscriber Account:', r);
       }
     };
 
@@ -135,7 +128,7 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
 
     subscriptions.forEach(subscription => {
       accountTo = subscription.address;
-      console.log(`accountTo: ${accountTo}`);
+      console.log(`Subscriber Account: ${accountTo}`);
 
       // token value in Euro  
       const euroValue = getNavValuationsInEuro(subscription.token);
@@ -143,8 +136,7 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
       //TODO round up , amount of token to uint
       // Calculate number of tokens to be assigned 
       const amountOfTokens = subscription.depositedAmount / euroValue;
-      console.log('amountOfTokens:', amountOfTokens);
-      batch.add(contractInstance.methods.balanceOf(accountFrom).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountFrom));
+      console.log('amount Of Tokens to be assigned:', amountOfTokens);
       batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountTo));
       batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountOfTokens).encodeABI() }, callbackMintFor));
       batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountTo));
