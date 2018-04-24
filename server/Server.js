@@ -1,39 +1,29 @@
+/**
+ *   Server Console
+ *   Simple Web Console to start Services and manage Master Data 
+ * 
+ */
+
 const joi = require('joi');
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const config = require('./config');
 app.use(express.json());
-var Web3 = require('web3');
-
-var web3;
-let web3Found = false
-// Checking if Web3 has been injected by the browser (Mist/MetaMask)
-if (typeof web3 !== 'undefined') {
-  // Use Mist/MetaMask's provider (Chrome)
-  web3Found = true
-  web3 = new Web3(web3.currentProvider)
-} else {
-  // TODO: Fall back to local node ( or https://mainnet.infura.io/ )
-  web3Found = false
-  web3 = new Web3(new Web3.providers.HttpProvider('http://localhost:8544'));
-}
-
-console.log('Eth Node Version: ', web3.version.node);
-console.log("Network: " ,web3.version.network, web3.version.ethereum);
-console.log('Connected to : ', web3.currentProvider);
 
 //routes
 var investorRoutes = require('../src/routes/investors');
 var fundRoutes = require('../src/routes/funds');
 var rateRoutes = require('../src/routes/rates');
 var subscriptionRoutes = require('../src/routes/subscriptions');
+var tokenAssignmentRoutes = require('../src/routes/tokenAssignment');
 
 const dateFormat = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 // cross origin options
 const cors = require('cors')
 
 var corsOptions = {
-  origin: 'localhost',
+  origin: config.app.host,
   optionsSuccessStatus: 200 // for old brwosers
 }
 app.use(cors(corsOptions))
@@ -45,16 +35,46 @@ app.get('/', (req, res) => {
   var getFundsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/funds' + '">Funds list </a>';
   var getratesUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/rates' + '">Rates list </a>';
   var getSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/subscriptions' + '">Subcriptions list </a>';
-  var addSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/form' + '">Add Subcription Form</a>';
+  var addSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/form' + '">Add Subcription</a>';
+  var assignOpenFundTokenUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/assignOpenFundTokens' + '">Assign OpenFundTokens to Subscribers</a>';
 
-
-  res.send('<h1>Welcome to Subscription Service</h1> <br><ul><li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><li>' + getSubcriptionsUrl + '</li><br><li>' + addSubcriptionsUrl + '</li></ul>');
+  res.send('<h1>Service Console</h1> <br><h2>Subscription Service</h2><ul><li>' + addSubcriptionsUrl + '</li><li>' + getSubcriptionsUrl + '</li></ul><br><hr><h2>OpenFundToken Assignment</h2><ul><li>' + assignOpenFundTokenUrl + '</li></ul><br><hr><h2>Master data</h2><ul> <li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><br></ul>');
 
 });
 
+  // add Subscription router
+  
+  app.get('/form', function(req, res) {
+    fs.readFile('./server/form.html', function(error, content) {
+        if (error) {
+          console.log(error);
+            res.writeHead(500);
+            res.end();
+        }
+        else {
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(content, 'utf-8');
+        }
+    });
+});
+
+//  Subscription list router
+app.use('/api',
+  function (req, res, next) {
+    next();
+  }
+  , subscriptionRoutes);
+
+//  Assign Tokens router
+
+app.use('/api',
+  function (req, res, next) {
+    next();
+  }
+  , tokenAssignmentRoutes);
 
 
-// Routing  
+// Master Data routers  
 app.use('/api',
   function (req, res, next) {
     next();
@@ -73,37 +93,11 @@ app.use('/api',
   }
   , rateRoutes);
 
-app.use('/api',
-  function (req, res, next) {
-    req.web3 = web3;
-    next();
-  }
-  , subscriptionRoutes);
-
-  // open Form
-  
-  app.get('/form', function(req, res) {
-    fs.readFile('./server/form.html', function(error, content) {
-        if (error) {
-          console.log(error);
-            res.writeHead(500);
-            res.end();
-        }
-        else {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
-            res.end(content, 'utf-8');
-        }
-    });
-});
 
 
-// Start Server on PORT ( example, export PORT = 3000)
-const port = process.env.PORT || 8000;
+const port = config.app.port;
 app.listen(port, () => {
   console.log(`Server started on ${port}!`);
 });
 
-module.exports = {
-  app: app
-
-}; 
+module.exports = app

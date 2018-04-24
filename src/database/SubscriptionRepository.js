@@ -1,22 +1,33 @@
+const fs = require('fs');
 var Model = require('../../src/models/Subscription');
 
-
+var subscriptions =[];
 
 function SubscriptionRepository() {
-    this.subscriptions = [
-        new Model(1, 1, "TRCOF", 2, "2018-03-28T15:09:16Z")
+    subscriptions = [
+        
     ];
 }
 
-SubscriptionRepository.prototype.findAll = function () {
-    return this.subscriptions;
-    // load subscriptions ( simulate async using promise)
-    //return Promise.resolve(this.subscriptions);
+SubscriptionRepository.prototype.findAll =  function () {
+
+    this.readFile(function(error, content) {
+        if (error) {
+          console.log(error);
+         
+        }
+        else {
+            console.log('subscriptions: ',  JSON.parse(content));
+            subscriptions =  JSON.parse(content);
+        }
+    });
+   
+    return Promise.resolve(subscriptions);
 };
 SubscriptionRepository.prototype.findOne = function (id) {
     // load subscription 
     var foundSubscription = undefined;
-    this.subscriptions.forEach(function (subscription) {
+    subscriptions.forEach(function (subscription) {
         if (subscription.id === id)
             foundSubscription = subscription;
     });
@@ -24,16 +35,35 @@ SubscriptionRepository.prototype.findOne = function (id) {
 };
 SubscriptionRepository.prototype.save = function (subscription) {
     //  save a subscription 
-    this.subscriptions.push(subscription);
-    return subscription;
+    subscriptions.push(subscription);
+    this.writeFile( function(error, content) {
+        if (error) {
+          console.log(error);
+        }
+        else {
+
+        }
+    });
+
+    return Promise.resolve(subscription);
 };
 SubscriptionRepository.prototype.remove = function (id) {
     // remove a subscription  
     var subscription = this.findOne(id);
     if (subscription)
-        this.subscriptions.splice(this.subscriptions.indexOf(subscription), 1);
+        subscriptions.splice(subscriptions.indexOf(subscription), 1);
     return subscription;
 };
+
+
+SubscriptionRepository.prototype.writeFile = function (callback) {
+    fs.writeFile( "subscription.json", JSON.stringify(subscriptions), "utf8", callback);
+};
+
+SubscriptionRepository.prototype.readFile = function (callback) {
+    fs.readFile('subscription.json', callback);
+};
+
 
 
 module.exports = SubscriptionRepository;
