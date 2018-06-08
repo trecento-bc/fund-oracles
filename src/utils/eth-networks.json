@@ -1,0 +1,20 @@
+{
+  "development": {
+    "id": 9,
+    "addr": "http://127.0.0.1:8544"},
+  "test": {
+    "id": 9,
+    "addr": "http://127.0.0.1:8115"},
+  "ganache":    {
+    "id": 5777,
+    "addr": "http://127.0.0.1:7545"},
+  "rinkeby":          {
+    "id": 4,
+    "addr": "https://rinkeby.infura.io/5uuRFJRROtrkh8RIVqF7"},
+  "kovan":            {
+    "id": 42,
+    "addr": "https://kovan.infura.io/5uuRFJRROtrkh8RIVqF7"},
+  "mainnet":          {
+    "id": 1,
+    "addr": "https://mainnet.infura.io/5uuRFJRROtrkh8RIVqF7"}
+}

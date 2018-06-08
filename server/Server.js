@@ -1,15 +1,19 @@
+import * as path from "path"
+
 /**
  *   Server Console
- *   Simple Web Console to start Services and manage Master Data 
- * 
+ *   Simple Web Console to start Services and manage Master Data
+ *
  */
 
 const joi = require('joi');
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const path = require('path');
 const config = require('./config');
 app.use(express.json());
+global.filePath = path.resolve(__dirname)
 
 //routes
 var investorRoutes = require('../src/routes/investors');
@@ -43,7 +47,7 @@ app.get('/', (req, res) => {
 });
 
   // add Subscription router
-  
+
   app.get('/form', function(req, res) {
     fs.readFile('./server/form.html', function(error, content) {
         if (error) {
@@ -74,7 +78,7 @@ app.use('/api',
   , tokenAssignmentRoutes);
 
 
-// Master Data routers  
+// Master Data routers
 app.use('/api',
   function (req, res, next) {
     next();
