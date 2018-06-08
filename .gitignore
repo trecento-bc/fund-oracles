@@ -2,3 +2,4 @@
 # frontend
 /frontend
 frontend/*.*
+/node_modules
