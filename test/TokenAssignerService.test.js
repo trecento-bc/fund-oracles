@@ -26,27 +26,19 @@ describe('Assign tokens to subscribed investor (assignOpenFundTokenForSubscripti
         accountTo = subscription.address;
         var balanceBefore;
         var balanceAfter;
-        console.log(helpers);
-        return helpers.initWeb3AndOpenFundTokenContract()
-            .then(function (result) {
-                accountFrom = result.accountFrom;
-                contractInstance = result.contractInstance;
-                web3 = result.web3;
-                return contractInstance.methods.balanceOf(accountTo).call({ from: accountFrom, gas: 300000 })
-                    .then(function (result) {
-                        console.log("balanceBefore:", result);
-                        balanceBefore = result;
-                        return tokenAssignerService.assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3)
-                            .then(function (result) {
-                                return contractInstance.methods.balanceOf(accountTo).call({ from: accountFrom, gas: 300000 });
-                            }).then(function (result) {
-                                console.log("balanceAfter:", result);
-                                balanceAfter = result;
-                                var diff = balanceAfter - balanceBefore;
-                                console.log("diff:", diff);
-                                assert.equal(diff, 10000);                                
-                            });
-                    });
-            });
-    });
+        result = await helpers.initWeb3AndOpenFundTokenContract();
+        accountFrom = result.accountFrom;
+        contractInstance = result.contractInstance;
+        web3 = result.web3;
+        result = await contractInstance.methods.balanceOf(accountTo).call({ from: accountFrom, gas: 300000 });
+        console.log("balanceBefore:", result);
+        balanceBefore = result;
+        await tokenAssignerService.assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3);
+        result =  await contractInstance.methods.balanceOf(accountTo).call({ from: accountFrom, gas: 300000 });
+        console.log("balanceAfter:", result);
+        balanceAfter = result;
+        var diff = balanceAfter - balanceBefore;
+        console.log("diff:", diff);
+        assert.equal(diff, 10000);  
+ });
 });
