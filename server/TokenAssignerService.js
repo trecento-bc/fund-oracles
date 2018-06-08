@@ -97,7 +97,7 @@ function assignOpenFundToken() {
  *
  */
 
-function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3) {
+async function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3) {
   var accounts;
   var accountFrom;
   var accountTo;
@@ -142,7 +142,7 @@ function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web
       batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountTo));
     });
     batch.execute();
-
+    return;
   }
 }
 
@@ -180,6 +180,7 @@ function etherAmount(euroValue) {
 
 
 module.exports = {
+  assignOpenFundTokenForSubscription:assignOpenFundTokenForSubscription,
   assignOpenFundToken: assignOpenFundToken
 
 }; 
