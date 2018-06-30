@@ -111,12 +111,9 @@ tbd
 
 * Step1: deploy Smart Contract 
 
-* Step2: adpat Smart contract address in config.js File
+* Step2: Install NodeJS  ( only needed on First Run)
 
-* Step3: Install NodeJS  ( only needed on First Run)
-
-
-* Step4: start Server and add subscriptions
+* Step4: install & start Server to add subscriptions
 
 
 ### Step1: Blockchain & SmartContracts Deployment
@@ -128,6 +125,25 @@ https://github.com/trecento-bc/fund-smart-contract
 
 * start terminal in the directory of downloaded "fund-smart-contract" project
 
+* check if npm is installed, and install if needed
+
+```
+npm version
+```
+
+* Install truffle
+    
+```
+npm install -g truffle
+```
+
+
+* Install ganache-cli
+
+```
+npm install -g ganache-cli
+```
+more details under:   https://www.npmjs.com/package/ganache-cli
 
 
 * start ganache local test Blockchain with prefilled Accounts
@@ -145,13 +161,50 @@ sh runTestRpc.sh
 truffle deploy
 ```
 
-### Step2: adpat Smart contract address in config
-* copy smart "contract address" (see example in screenshot below) into config.js File:
+### Step2: Install NodeJS  ( only needed on first Run)
+
+* check if node is installed
+
+```
+node --version
+```
+
+* install nodeJs ( if needed)
+
+```
+download and install from  https://nodejs.org/en/
+```
+
+
+
+### Step4: install & start Server 
+
+* download the server from this Repo
+
+```
+git clone https://github.com/trecento-bc/fund-oracles
+```
+
+* install dependencies  ( check package.json)
+```
+npm install
+```
+
+
+* adpat Smart contract address in config.js
+
+1. cd into the new created directory fund-oracles
+
+```
+cd fund-oracles
+```
+
+2. copy smart "contract address" (see example in screenshot below) into config.js File:
 
 ![truffle deploy](/images/truffleDeploy.png)
 
 ```
-//Example ( Snippet from config.js File)
+//Example ( Snippet from config.js File, edit and save)
 ..
 openFundTokenContract: {
         contractAddress: '0xabcaffd96f3af726faca423705f036e55d497190',
@@ -160,19 +213,6 @@ openFundTokenContract: {
 ```
 >This manual step will be replaced by setting ENV variables in a build script, or doing it analog to truffle 
 
-### Step3: Install NodeJS  ( only needed on first Run)
-* install nodeJs
-
-```
-download and install from  https://nodejs.org/en/
-```
-
-* install dependencies  ( check package.json)
-```
-npm install
-```
-
-### Step3: start Server 
 
 * start server  
 ```
@@ -190,10 +230,7 @@ node server/Server.js
     },
 ```
 
-
-
-## Security Aspects
-tbd
+* check if server is running under http://[ trecento server name]:8000
 
 ## Installation TEST
 ### Server 
@@ -209,4 +246,3 @@ tbd
 
 ### Blockchain & SmartContracts main-net
 tbd
-
