@@ -113,7 +113,7 @@ tbd
 
 * Step2: Install NodeJS  ( only needed on First Run)
 
-* Step4: install & start Server to add subscriptions
+* Step3: install & start Server to add subscriptions
 
 
 ### Step1: Blockchain & SmartContracts Deployment
@@ -177,7 +177,7 @@ download and install from  https://nodejs.org/en/
 
 
 
-### Step4: install & start Server 
+### Step3: install & start Server 
 
 * download the server from this Repo
 
