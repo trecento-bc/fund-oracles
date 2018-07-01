@@ -28,7 +28,7 @@
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
-  "source": "// Copyright (c) 2018 Company Inc.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//     http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n\npragma solidity ^0.4.23;\n\n\n/**\n * @title Contract that will work with ERC223 tokens.\n */\ninterface ERC223ReceivingContract {\n    /**\n     * @dev Standard ERC223 function that will handle incoming token transfers.\n     *\n     * @param src  Token sender address.\n     * @param wad  Amount of tokens.\n     * @param _data  Transaction metadata.\n     */\n    function tokenFallback(address src, uint wad, bytes _data) external;\n}\n",
+  "source": "// Copyright (c) 2018 Company Inc.\n//\n// Licensed under the Apache License, Version 2.0 (the \"License\");\n// you may not use this file except in compliance with the License.\n// You may obtain a copy of the License at\n//\n//     http://www.apache.org/licenses/LICENSE-2.0\n//\n// Unless required by applicable law or agreed to in writing, software\n// distributed under the License is distributed on an \"AS IS\" BASIS,\n// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n// See the License for the specific language governing permissions and\n// limitations under the License.\n\n\npragma solidity ^0.4.23;\n\n\n/**\n * @title Contract that will work with ERC223 tokens.\n */\ncontract ERC223ReceivingContract {\n    /**\n     * @dev Standard ERC223 function that will handle incoming token transfers.\n     *\n     * @param src  Token sender address.\n     * @param wad  Amount of tokens.\n     * @param _data  Transaction metadata.\n     */\n    function tokenFallback(address src, uint wad, bytes _data) public;\n}\n",
   "sourcePath": "/Users/mbenhajla/Documents/TrecentoProject/fund-smart-contract/contracts/tokens/ERC223_receiving_contract.sol",
   "ast": {
     "absolutePath": "/Users/mbenhajla/Documents/TrecentoProject/fund-smart-contract/contracts/tokens/ERC223_receiving_contract.sol",
@@ -54,7 +54,7 @@
       {
         "baseContracts": [],
         "contractDependencies": [],
-        "contractKind": "interface",
+        "contractKind": "contract",
         "documentation": "@title Contract that will work with ERC223 tokens.",
         "fullyImplemented": false,
         "id": 1522,
@@ -84,7 +84,7 @@
                   "name": "src",
                   "nodeType": "VariableDeclaration",
                   "scope": 1521,
-                  "src": "971:11:8",
+                  "src": "970:11:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -95,7 +95,7 @@
                     "id": 1513,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "971:7:8",
+                    "src": "970:7:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -110,7 +110,7 @@
                   "name": "wad",
                   "nodeType": "VariableDeclaration",
                   "scope": 1521,
-                  "src": "984:8:8",
+                  "src": "983:8:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -121,7 +121,7 @@
                     "id": 1515,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "984:4:8",
+                    "src": "983:4:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -136,18 +136,18 @@
                   "name": "_data",
                   "nodeType": "VariableDeclaration",
                   "scope": 1521,
-                  "src": "994:11:8",
+                  "src": "993:11:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeIdentifier": "t_bytes_memory_ptr",
                     "typeString": "bytes"
                   },
                   "typeName": {
                     "id": 1517,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "994:5:8",
+                    "src": "993:5:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -157,27 +157,27 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "970:36:8"
+              "src": "969:36:8"
             },
             "payable": false,
             "returnParameters": {
               "id": 1520,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1015:0:8"
+              "src": "1012:0:8"
             },
             "scope": 1522,
-            "src": "948:68:8",
+            "src": "947:66:8",
             "stateMutability": "nonpayable",
             "superFunction": null,
-            "visibility": "external"
+            "visibility": "public"
           }
         ],
         "scope": 1523,
-        "src": "684:334:8"
+        "src": "684:331:8"
       }
     ],
-    "src": "595:424:8"
+    "src": "595:421:8"
   },
   "legacyAST": {
     "absolutePath": "/Users/mbenhajla/Documents/TrecentoProject/fund-smart-contract/contracts/tokens/ERC223_receiving_contract.sol",
@@ -203,7 +203,7 @@
       {
         "baseContracts": [],
         "contractDependencies": [],
-        "contractKind": "interface",
+        "contractKind": "contract",
         "documentation": "@title Contract that will work with ERC223 tokens.",
         "fullyImplemented": false,
         "id": 1522,
@@ -233,7 +233,7 @@
                   "name": "src",
                   "nodeType": "VariableDeclaration",
                   "scope": 1521,
-                  "src": "971:11:8",
+                  "src": "970:11:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -244,7 +244,7 @@
                     "id": 1513,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "971:7:8",
+                    "src": "970:7:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -259,7 +259,7 @@
                   "name": "wad",
                   "nodeType": "VariableDeclaration",
                   "scope": 1521,
-                  "src": "984:8:8",
+                  "src": "983:8:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -270,7 +270,7 @@
                     "id": 1515,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
-                    "src": "984:4:8",
+                    "src": "983:4:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -285,18 +285,18 @@
                   "name": "_data",
                   "nodeType": "VariableDeclaration",
                   "scope": 1521,
-                  "src": "994:11:8",
+                  "src": "993:11:8",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeIdentifier": "t_bytes_memory_ptr",
                     "typeString": "bytes"
                   },
                   "typeName": {
                     "id": 1517,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
-                    "src": "994:5:8",
+                    "src": "993:5:8",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bytes_storage_ptr",
                       "typeString": "bytes"
@@ -306,27 +306,27 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "970:36:8"
+              "src": "969:36:8"
             },
             "payable": false,
             "returnParameters": {
               "id": 1520,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "1015:0:8"
+              "src": "1012:0:8"
             },
             "scope": 1522,
-            "src": "948:68:8",
+            "src": "947:66:8",
             "stateMutability": "nonpayable",
             "superFunction": null,
-            "visibility": "external"
+            "visibility": "public"
           }
         ],
         "scope": 1523,
-        "src": "684:334:8"
+        "src": "684:331:8"
       }
     ],
-    "src": "595:424:8"
+    "src": "595:421:8"
   },
   "compiler": {
     "name": "solc",
@@ -334,5 +334,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.0",
-  "updatedAt": "2018-06-07T14:07:34.776Z"
+  "updatedAt": "2018-07-01T11:53:16.856Z"
 }

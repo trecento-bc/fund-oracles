@@ -11,6 +11,7 @@ const fs = require('fs');
 const config = require('./config');
 app.use(express.json());
 var schedule = require('node-schedule');
+var BigNumber = require('bignumber.js');
 var Web3 = require('web3');
 var web3;
 var SubscriptionRepository = require('../src/database/SubscriptionRepository');
@@ -101,48 +102,42 @@ async function assignOpenFundTokenForSubscription(subscriptions, contractInstanc
   var accounts;
   var accountFrom;
   var accountTo;
-
+  let results =  [];
   if (subscriptions) {
 
     // Get minter Account
     accountFrom = config.openFundTokenContract.minterAccount;
+    //console.log('contractInstance:', contractInstance);
+    //console.log('web3:', web3);
     console.log(`Minter Account : ${accountFrom}`);
 
-    var callbackBalanceOfAccountTo = function (err, r) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('Token Balance Of Subscriber Account:', r);
-      }
-    };
-
-    var callbackMintFor = function (err, r) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log('MintFor Transaction:', r);
-      }
-    };
-
-    var batch = new web3.BatchRequest();
-
-    subscriptions.forEach(subscription => {
+    subscriptions.forEach(async(subscription) => {
       accountTo = subscription.address;
       console.log(`Subscriber Account: ${accountTo}`);
 
       // token value in Euro  
       const euroValue = getNavValuationsInEuro(subscription.token);
-      // TODO: use bignumber.js ( npm package), and decimal 1e18 ( as in token contract)
-      //TODO round up , amount of token to uint
-      // Calculate number of tokens to be assigned 
+      const decimalPrecision = 18; // TODO: read from contractInstance.decimals;
       const amountOfTokens = subscription.depositedAmount / euroValue;
-      console.log('amount Of Tokens to be assigned:', amountOfTokens);
-      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountTo));
-      batch.add(web3.eth.sendTransaction.request({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountOfTokens).encodeABI() }, callbackMintFor));
-      batch.add(contractInstance.methods.balanceOf(accountTo).call.request({ from: accountFrom, gas: 300000 }, callbackBalanceOfAccountTo));
+      console.log('amount Of Tokens :', amountOfTokens);
+      //Amount to send in decimal
+      var weiAmountOfTokens = amountOfTokens * ( 10 ** decimalPrecision);
+      console.log('weiAmountOfTokens Of Tokens:', weiAmountOfTokens);
+      //Amount to send as BigNumber
+      var amountToSendTokens =  new BigNumber(weiAmountOfTokens);
+      console.log('amountToSendTokens to be assigned:', amountToSendTokens);
+     
+      let initialBalance = await contractInstance.methods.balanceOf(accountFrom).call();
+      console.log('initialBalance:' , initialBalance);
+      let result = await web3.eth.sendTransaction({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountToSendTokens).encodeABI() });
+      results.push(result);
+      let afterMintBalance = await contractInstance.methods.balanceOf(accountTo).call({ from: accountFrom, gas: 300000 });
+      console.log('afterMintBalance:' , afterMintBalance);
+    
     });
-    batch.execute();
-    return;
+  
+ 
+    return results;
   }
 }
 
@@ -178,6 +173,8 @@ function etherAmount(euroValue) {
 }
 
 
+
+   
 
 module.exports = {
   assignOpenFundTokenForSubscription:assignOpenFundTokenForSubscription,
