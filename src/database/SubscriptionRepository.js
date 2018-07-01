@@ -35,6 +35,7 @@ SubscriptionRepository.prototype.findOne = function (id) {
 };
 SubscriptionRepository.prototype.save = function (subscription) {
     //  save a subscription 
+    console.log('***subscription ', subscription);
     subscriptions.push(subscription);
     this.writeFile( function(error, content) {
         if (error) {
