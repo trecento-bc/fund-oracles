@@ -117,10 +117,10 @@ const linkLibrary = async function (libJsonName, contract) {
   return json
 }
 
-export {
-  getWeb3,
-  getContractJson,
-  linkLibrary,
-  deployNewInstance,
-  getDeployedInstance
+module.exports = {
+  getWeb3 : getWeb3,
+  getContractJson: getContractJson,
+  linkLibrary:linkLibrary,
+  deployNewInstance:deployNewInstance,
+  getDeployedInstance:getDeployedInstance
 }
