@@ -45,54 +45,8 @@
 <div>
   <form action="/api/subscriptions/" method="post" name="subscriptForm">
     <div id="investorDiv">
-      <label for="investorId">investorId: </label>
-      <select id="investor-dropdown" name="investorId">
-      </select>
-      <script>
-          investorDiv = (() => { prefillInvestors() })()
-          function prefillInvestors() {
-            let dropdown = document.getElementById('investor-dropdown');
-            dropdown.length = 0;
-        
-            let defaultOption = document.createElement('option');
-            defaultOption.text = 'Select Investor';
-        
-            dropdown.add(defaultOption);
-            dropdown.selectedIndex = 0;
-        
-            const url = 'http://localhost:8000/api/investors';
-        
-            fetch(url)
-              .then(
-                function (response) {
-                  if (response.status !== 200) {
-                    console.warn('Problem occured. Status Code: ' +
-                      response.status);
-                    return;
-                  }
-        
-                  // Examine the text in the response  
-                  response.json().then(function (data) {
-                    let option;
-        
-                    for (let i = 0; i < data.length; i++) {
-                      option = document.createElement('option');
-                      option.setAttribute("id", "investorId");
-                      option.text = data[i].firstName + " " + data[i].lastName + "("+data[i].id +")" ;
-                      option.value = data[i].id;
-                      dropdown.add(option);
-                    }
-                  });
-                }
-              )
-              .catch(function (err) {
-                console.error('Fetch Error -', err);
-              });
-          }
-        </script>
-    </div>
-    <!--<label for="investorId">Enter investorId: </label>
-    <input id="investorId" type="text" name="investorId" value="1"> !-->
+    <label for="investorId">Enter investorId: </label>
+    <input id="investorId" type="text" name="investorId" value="1"> 
     <label for="token">Token Symbol: </label>
     <input id="token" type="text" name="token" value="TRCOF">
     <label for="depositedAmount">Deposited Amount (Euro): </label>

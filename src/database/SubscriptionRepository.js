@@ -11,16 +11,20 @@ function SubscriptionRepository() {
 
 SubscriptionRepository.prototype.findAll =  function () {
 
-    this.readFile(function(error, content) {
-        if (error) {
-          console.log(error);
-         
-        }
-        else {
-            console.log('subscriptions: ',  JSON.parse(content));
-            subscriptions =  JSON.parse(content);
-        }
-    });
+    setTimeout(function(){
+        fs.readFile('subscription.json', function(error, content) {
+            if (error) {
+              console.log("error findAll: ", error);
+             
+            }
+            else {
+                //console.log('subscriptions: ',  JSON.parse(content));
+                subscriptions =  JSON.parse(content);
+            }
+        });
+    }, 1000); //waiting a second to read file
+
+    
    
     return Promise.resolve(subscriptions);
 };
@@ -39,7 +43,7 @@ SubscriptionRepository.prototype.save = function (subscription) {
     subscriptions.push(subscription);
     this.writeFile( function(error, content) {
         if (error) {
-          console.log(error);
+          console.log("error save:", error);
         }
         else {
 

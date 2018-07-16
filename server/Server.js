@@ -37,8 +37,8 @@ app.get('/', (req, res) => {
   var getInvestorsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/investors' + '">Investors list </a>';
   var getFundsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/funds' + '">Funds list </a>';
   var getratesUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/rates' + '">Rates list </a>';
-  var getSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/subscriptions' + '">Subcriptions list </a>';
-  var addSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/form' + '">Add Subcription</a>';
+  var getSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/subscriptions' + '">Subscriptions list </a>';
+  var addSubcriptionsUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/form' + '">Add Subscription</a>';
   var assignOpenFundTokenUrl = '<a href="' + req.protocol + '://' + req.get('host') + '/api/assignOpenFundTokens' + '">Assign OpenFundTokens to Subscribers</a>';
 
   res.send('<h1>Service Console</h1> <br><h2>Subscription Service</h2><ul><li>' + addSubcriptionsUrl + '</li><li>' + getSubcriptionsUrl + '</li></ul><br><hr><h2>OpenFundToken Assignment</h2><ul><li>' + assignOpenFundTokenUrl + '</li></ul><br><hr><h2>Master data</h2><ul> <li>' + getInvestorsUrl + '</li><li>' + getFundsUrl + '</li><li>' + getratesUrl + '</li><br></ul>');
@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
   app.get('/form', function(req, res) {
     fs.readFile('./server/form.html', function(error, content) {
         if (error) {
-          console.log(error);
+          console.log("error app.get :", error);
             res.writeHead(500);
             res.end();
         }

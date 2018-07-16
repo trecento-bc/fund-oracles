@@ -9,6 +9,8 @@ const express = require('express');
 const app = express();
 const fs = require('fs');
 const config = require('./config');
+const utils = require('../src/utils/ethereum-functions.js');
+const networks = require('../src/utils/eth-networks');
 app.use(express.json());
 var schedule = require('node-schedule');
 var BigNumber = require('bignumber.js');
@@ -20,39 +22,10 @@ var subscriptions = [];
 
 const LocalProvider = require('web3-local-signing-provider');
 var subscriberAccounts = [];
+var ethereumNodeNet = config.ethereumNode.net;
+var ethereumNodeURL = networks[ethereumNodeNet].addr;
+var ethereumNodeId = networks[ethereumNodeNet].id;
 
-
-/**
- * initWeb3LocalProvider
- *
- * Get the List of Subscriptions and build sorted array with traget accounts
- *
- */
-function initWeb3LocalProvider() {
-  const { ethereumNode: { host, port } } = config;
-  const connectionString = `http://${host}:${port}`;
-
-  // Get the Minter Account
-  var minterAccount = config.openFundTokenContract.minterAccount;
-  var minterAccountKey = config.openFundTokenContract.ownerKey;
-
-  //get all Subscriber Accounts
-  return SubscriptionRepositoryInstance.findAll().then(
-    function (result) {
-      subscriptions = result
-      var i = 1;
-      subscriptions.forEach(subscription => {
-        subscriberAccounts[i] = subscription.address;
-        i++;
-      });
-      // instantiate LocalProvider (from "web3-local-signing-provider") 
-      // using configured geth node and the signing key of the minter
-      const provider = new LocalProvider(minterAccountKey,
-        new Web3.providers.HttpProvider(connectionString));
-      return provider.web3;
-    });
-
-}
 
 // Schedule distribuion of tokens
 
@@ -65,81 +38,96 @@ function scheduleDaily() {
 
 // distribute tokens for a ALL Subscriptions
 
-function assignOpenFundToken() {
+async function assignOpenFundToken() {
+  var minterAccountKey = config.openFundTokenContract.ownerKey;
   // init Web3
-  initWeb3LocalProvider().then(
-    function (result) {
-      web3 = result;
-      // declare contract 
-      //TODO : JSON from Build Folder
-      const OpenFund_json = require('../contracts_api/OpenFundToken.json');
-      abi = OpenFund_json.abi;
-      console.log("****************  ********************** ****");
-      console.log("Instantiate OpenFundToken");
-      //TODO Get contract adress from JSON ( Build Folder) instead of config File
-      var contractInstance = new web3.eth.Contract(abi, config.openFundTokenContract.contractAddress, {
-        from: config.openFundTokenContract.minterAccount
-      });
-      assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3);
-    }
-  );
+  web3 = await utils.getWeb3(ethereumNodeNet, minterAccountKey);
+  var OpenFund_json = await utils.getContractJson("OpenFundToken");
+  abi = OpenFund_json.abi;
+  const openFundTokenContractAddress = OpenFund_json.networks[ethereumNodeId].address;
+  console.log("openFundTokenContractAddress:", openFundTokenContractAddress);
+  console.log("****************  ********************** ****");
+  console.log("Instantiate OpenFundToken");
+  var contractInstance = await utils.getDeployedInstance("OpenFundToken", openFundTokenContractAddress)
+  var results = assignOpenFundTokenForAllSubscriptions(contractInstance, web3);
 
 }
 
 
 /**
- * assignOpenFundTokenForSubscription
+ * assignOpenFundTokenForAllSubscriptions
  *
  * Calls OpenFundToken Smart contract and Transfer Ether to buy tokens for 
  * all subscribed investors
+ * 
+ * @param {contractInstance}   Token smart contract 
+ * @param {web3}   web3       .
+ *
+ */
+
+function assignOpenFundTokenForAllSubscriptions(contractInstance, web3) {
+  var accounts;
+  var accountFrom;
+  var accountTo;
+  let results = [];
+  // Get minter Account
+  accountFrom = config.openFundTokenContract.minterAccount;
+  console.log(`Minter Account : ${accountFrom}`);
+
+  SubscriptionRepositoryInstance.findAll().then(
+    function (result) {
+      subscriptions = result
+      subscriptions.forEach(async (subscription) => {
+        assignOpenFundTokenForSingleSubscription(subscription, contractInstance, web3)
+      });
+    });
+  return results;
+}
+
+
+/**
+ * assignOpenFundTokenForSingleSubscription
+ *
+ * Calls OpenFundToken Smart contract and Transfer Ether to buy tokens for 
+ * a single Subscription
  * 
  * @param {Subscription}   subscription   
  * @param {contractInstance}   Token smart contract     .
  *
  */
 
-async function assignOpenFundTokenForSubscription(subscriptions, contractInstance, web3) {
+async function assignOpenFundTokenForSingleSubscription(subscription, contractInstance, web3) {
   var accounts;
   var accountFrom;
   var accountTo;
-  let results =  [];
-  if (subscriptions) {
+  let results = [];
+  // Get minter Account
+  accountFrom = config.openFundTokenContract.minterAccount;
+  console.log(`Minter Account : ${accountFrom}`);
+  accountTo = subscription.address;
+  console.log(`Subscriber Account: ${accountTo}`);
+  // token value in Euro  
+  const euroValue = getNavValuationsInEuro(subscription.token);
+  const decimalPrecision = 18; // TODO: read from contractInstance.decimals;
+  const amountOfTokens = subscription.depositedAmount / euroValue;
+  console.log('amount Of Tokens :', amountOfTokens);
+  //Amount to send in decimal
+  var weiAmountOfTokens = amountOfTokens * (10 ** decimalPrecision);
+  console.log('weiAmountOfTokens Of Tokens:', weiAmountOfTokens);
+  //Amount to send as BigNumber
+  var amountToSendTokens = new BigNumber(weiAmountOfTokens);
+  console.log('amountToSendTokens to be assigned:', amountToSendTokens);
 
-    // Get minter Account
-    accountFrom = config.openFundTokenContract.minterAccount;
-    //console.log('contractInstance:', contractInstance);
-    //console.log('web3:', web3);
-    console.log(`Minter Account : ${accountFrom}`);
-
-    subscriptions.forEach(async(subscription) => {
-      accountTo = subscription.address;
-      console.log(`Subscriber Account: ${accountTo}`);
-
-      // token value in Euro  
-      const euroValue = getNavValuationsInEuro(subscription.token);
-      const decimalPrecision = 18; // TODO: read from contractInstance.decimals;
-      const amountOfTokens = subscription.depositedAmount / euroValue;
-      console.log('amount Of Tokens :', amountOfTokens);
-      //Amount to send in decimal
-      var weiAmountOfTokens = amountOfTokens * ( 10 ** decimalPrecision);
-      console.log('weiAmountOfTokens Of Tokens:', weiAmountOfTokens);
-      //Amount to send as BigNumber
-      var amountToSendTokens =  new BigNumber(weiAmountOfTokens);
-      console.log('amountToSendTokens to be assigned:', amountToSendTokens);
-     
-      let initialBalance = await contractInstance.methods.balanceOf(accountFrom).call();
-      console.log('initialBalance:' , initialBalance);
-      let result = await web3.eth.sendTransaction({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountToSendTokens).encodeABI() });
-      results.push(result);
-      let afterMintBalance = await contractInstance.methods.balanceOf(accountTo).call({ from: accountFrom, gas: 300000 });
-      console.log('afterMintBalance:' , afterMintBalance);
-    
-    });
-  
- 
-    return results;
-  }
+  let initialBalance = await contractInstance.methods.balanceOf(accountFrom).call();
+  console.log('initialBalance:', initialBalance);
+  //let result = await web3.eth.sendTransaction({ to: contractInstance.options.address, data: contractInstance.methods.mintFor(accountTo, amountToSendTokens).encodeABI() });
+  let result = await contractInstance.methods.mintFor(accountTo, amountToSendTokens).send();
+  results.push(result);
+  let afterMintBalance = await contractInstance.methods.balanceOf(accountTo).call({ from: accountFrom, gas: 300000 });
+  console.log('afterMintBalance:', afterMintBalance);
 }
+
+
 
 /**
  * Returns the value of the given token widget.
@@ -174,10 +162,11 @@ function etherAmount(euroValue) {
 
 
 
-   
+
 
 module.exports = {
-  assignOpenFundTokenForSubscription:assignOpenFundTokenForSubscription,
+  assignOpenFundTokenForSingleSubscription: assignOpenFundTokenForSingleSubscription,
+  assignOpenFundTokenForAllSubscriptions: assignOpenFundTokenForAllSubscriptions,
   assignOpenFundToken: assignOpenFundToken
 
 }; 

@@ -199,19 +199,17 @@ npm install
 cd fund-oracles
 ```
 
-2. copy smart "contract address" (see example in screenshot below) into config.js File:
-
-![truffle deploy](/images/truffleDeploy.png)
+2. set the environment variable "ethereumNode" in "config.js" to one of the values of the "eth-networks" ( development, test , kovan, mainnet..) 
 
 ```
 //Example ( Snippet from config.js File, edit and save)
 ..
-openFundTokenContract: {
-        contractAddress: '0xabcaffd96f3af726faca423705f036e55d497190',
-       ...
-    }
+ethereumNode: {
+        net:"development"
+    },
 ```
->This manual step will be replaced by setting ENV variables in a build script, or doing it analog to truffle 
+>all possible values are listed in the file 
+fund-oracles/src/utils/eth-networks.json  
 
 
 * start server  
