@@ -15,6 +15,7 @@ This project doesn't use truffle.
 ### Server.js
 A test restful http-server to allow calling the services from the browser to display subscriptions, investors, funds and to add new subscriptions through a basic HTML Form.
 
+#### Get Subscriptions
 * Example to Get existing subscriptions 
 ```
 http://localhost:8000/api/subscriptions
@@ -22,11 +23,44 @@ http://localhost:8000/api/subscriptions
 ```
 ![Server](/images/server_home.png)
 
-* POST new subscriptions  requests can be send through a Simple Form.
+>ON first Run, Subscriptions Cache is empty ( Reload the browser, the issue will be fixed)
 
+#### Add Subscriptions ( UI)
+* Adding new subscriptions requests can be done through a Simple Form.
+( use the Link "Add Subcription" in the GUI, to start the form)
 
 ![addSubscription](/images/addSubscription.png)
+
+* Enter an existing investorId
 ----
+
+#### Add Investors, Funds and Rates (No UI, static data)
+
+For investors , funds and rates , the data is for "now" static in the application, and can be changed only by modifying application files:
+
+To Add Investors:
+* open the file fund-oracles/src/database/InvestorRepository.js
+* edit the init method by adding data in the model as the example below:
+
+```
+//Before:
+function InvestorRepository() {
+    this.investors = [
+        new Model(1, "Jane", "Doe")
+    ];
+}
+//After adding 2 investors
+
+function InvestorRepository() {
+   this.investors = [
+        new Model(1, "Jane", "Doe"),
+		 new Model(1, "Fernando", "Gomez"),
+		new Model(1, "Paulo", "Rossini")
+    ];
+}
+
+```
+The same gilt for adding funds and Rates. The Server need to be restarted after the changes.
 
 
 ### Models & Database
@@ -52,13 +86,6 @@ The rest of the data ( master Data) like rates , investors, funds is for now is 
 
 >The data is defined in the database folder, a database (for example mongoDb) can be added later to persist the data.
 
-
-#### example master data:
-```
-const investors = [  {id: 1, firstName: 'Jane', lastName:'Doe'}];
-const funds = [  { token: 'TRCOF', name: 'openfund'}];
-..
-```
 
 ### Services
 #### SubscriptionService.js
@@ -160,6 +187,8 @@ sh runTestRpc.sh
 ```
 truffle deploy
 ```
+> JSON Files for the contracts ( containing the ABI) will be created
+under build/contracts
 
 ### Step2: Install NodeJS  ( only needed on first Run)
 
@@ -208,8 +237,15 @@ ethereumNode: {
         net:"development"
     },
 ```
+
+
 >all possible values are listed in the file 
 fund-oracles/src/utils/eth-networks.json  
+
+
+
+* copy the generated JSON contracts files ABI  ( containing the ABI) from
+"build/contracts" to the "contracts_api" folder ( this step will be automated in circleCi)
 
 
 * start server  
@@ -230,15 +266,15 @@ node server/Server.js
 
 * check if server is running under http://[ trecento server name]:8000
 
-## Installation TEST
+## Installation TEST ( Kovan Network)
 ### Server 
 tbd
 
-### Blockchain & SmartContracts Rinkeby
+### Blockchain & SmartContracts 
 tbd
 
 
-## Installation PROD
+## Installation mainNet
 ### Server 
 tbd
 
