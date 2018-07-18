@@ -220,7 +220,7 @@ npm install
 ```
 
 
-* adpat Smart contract address in config.js
+* adpat Environment in config.js
 
 1. cd into the new created directory fund-oracles
 
